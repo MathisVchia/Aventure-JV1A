@@ -1,21 +1,39 @@
-    var game = new Phaser.Game(config);
+var game = new Phaser.Game(config);
 
-    var player;
-    var npc;
-    var mob;
-    var cursorsUp;
-    var cursorsLeft;
-    var cursorsRight;
-    var cursorsDown;
+var player;
+var npc;
+var cursorsUp;
+var cursorsLeft;
+var cursorsRight;
+var cursorsDown;
 
 
-class ZeldaLike extends Phaser.Scene{
 
-    constructor(){
+//var mob;
+this.mob;
+this.mobX = true;
+this.temp = false;
+this.speedMob = 50;
+this.directionMob = 'right';
+this.modeAggro = false;
+this.diagoX = 0; // pour éviter déplacement diagonale rapide
+this.diagoY = 0;
+this.visionRange = 100;
+this.angleMob = 0; // sa direction, pas défaut à droite, (gauche : Math.PI, haut : Math.PI/2, bas : -Math.PI/2)
+this.fovMob = Math.PI / 4 // son champ de vision, 45 degrés ici
+
+
+
+class ZeldaLike extends Phaser.Scene {
+
+    constructor() {
         super("chambre");
+        this.angleMob = 0;
+        this.visionRange = 200;
+        this.modeAggro = false;
     }
 
-    preload(){
+    preload() {
         this.load.image('player', 'assets/player.png');
         this.load.image('npc', 'assets/npc.png');
         this.load.image('mob', 'assets/mob.png');
@@ -30,7 +48,7 @@ class ZeldaLike extends Phaser.Scene{
     create() {
 
         // Integration du background
-        this.add.image(0,0, 'fond 1').setOrigin(0, 0);
+        this.add.image(0, 0, 'fond 1').setOrigin(0, 0);
 
 
         // Create player sprite and enable physics
@@ -44,8 +62,8 @@ class ZeldaLike extends Phaser.Scene{
 
 
         // Create NPC sprite and enable physics
-        mob = this.physics.add.sprite(300, 450, 'mob');
-        mob.setCollideWorldBounds(true);
+        this.mob = this.physics.add.sprite(300, 450, 'mob');
+        this.mob.setCollideWorldBounds(true);
 
 
         // Create cursors object for player movement
@@ -82,25 +100,26 @@ class ZeldaLike extends Phaser.Scene{
 
 
         // Set up collision between player and npc
-        this.physics.add.collider(player, mob);
-        //this.physics.add.collider(player, npc);
+        this.physics.add.collider(player, this.mob);
+        this.physics.add.collider(player, npc);
 
-        
+
         // Set up overlap between player and npc for interaction
         this.physics.add.overlap(player, npc, this.showDialogue);
 
 
         // Set up overlap between player and mob for attack
-        this.physics.add.overlap(player, mob, this.showAttack);
+        this.physics.add.overlap(player, this.mob, this.showAttack);
 
 
         // Detecter la collision entre le bord du monde et le perso pour load la nouvelle map
         this.physics.world.setBoundsCollision(true, true, true, true);
-        this.physics.world.on('worldbounds', function(body) {
+        this.physics.world.on('worldbounds', function (body) {
             if (body.blocked.right) {
                 this.changeLevel();
             }
         }, this);
+
 
 
 
@@ -120,86 +139,94 @@ class ZeldaLike extends Phaser.Scene{
         } else {
             player.setVelocityX(0);
         }
-        
+
         if (cursorsUp.isDown) {
             player.setVelocityY(-160);
         } else if (cursorsDown.isDown) {
             player.setVelocityY(160);
-        } 
+        }
         else {
             player.setVelocityY(0);
         }
 
 
-        if (player.y <= 50){
+        if (player.y <= 50) {
             this.scenelevel2();
         };
+
+
+
     }
 
-    scenelevel2(){
+    scenelevel2() {
         this.scene.start("level2")
     }
-    
+
 }
-        /*// Hide dialogue box when interact button is released
-        if (Phaser.Input.Keyboard.JustUp(interactButton)) {
-            dialogueBox.visible = false;
-            dialogueText.setText('');
-        }
+
+
+//Hide dialogue box when interact button is released
+if (this.interactButton.isDown) {
+    this.dialogueBox.visible = false;
+    this.dialogueText.setText('');
+}
+
+/*
+
+function showAttack(){
+    // Generate sentence attack
+    var attackTxt = [
+        "Tu attaques !"
+    ];
+    // var attack = attackTxt[randomIndex];
+
+    // Show the sentence when attack is true
+    if ((this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.SPACE))) {
+        this.dialogueBox.visible = true;
+        this.dialogueText.setText(this.attackTxt);
+        this.mob.visible = false;
+    }
+}
+
+function showDialogue() {
+    // Generate a random dialogue
+    var dialogue = [
+        "Ah tu es enfin là!",
+    ];
+    //var randomIndex = Math.floor(Math.random() * dialogues.length);
+    //var dialogue = dialogues[randomIndex];
+
+    // Show dialogue box and text
+    if ((this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.Z))) {
+        this.dialogueBox.visible = true;
+        this.dialogueText.setText(this.dialogue);
+
+    }
+}
+
+// Faire en sorte que tout despawn pour changer de niveau
+
+function changeLevel(){
+    this.player.destroy();
+    this.npc.destroy();
+    this.mob.destroy();
+
+    if (player.setCollideWorldBounds(true)) {
+        //this.scene.stop();
+        this.scene.start('level2');
     }
 
-    showAttack(){
-        // Generate sentence attack
-        var attackTxt = [
-            "Tu attaques !"
-        ];
-        // var attack = attackTxt[randomIndex];
+    // Créer un nouveau joueur dans le nouveau niveau
+    this.player = this.physics.add.sprite(100, 450, 'player');
+    this.player.setCollideWorldBounds(true);
 
-        // Show the sentence when attack is true
-        if (Phaser.Input.Keyboard.JustUp(attackButton)) {
-            dialogueBox.visible = true;
-            dialogueText.setText(attackTxt);
-            mob.visible = false;
-        }
-    }
-    showDialogue() {
-        // Generate a random dialogue
-        var dialogue = [
-            "Ah tu es enfin là!",
-        ];
-        //var randomIndex = Math.floor(Math.random() * dialogues.length);
-        //var dialogue = dialogues[randomIndex];
 
-        // Show dialogue box and text
-        if (Phaser.Input.Keyboard.JustUp(interactButton)) {
-            dialogueBox.visible = true;
-            dialogueText.setText(dialogue);
+    // Mettre à jour la caméra pour suivre le joueur dans le nouveau niveau
+    this.cameras.main.startFollow(this.player);
 
-        }
-    }
+}
 
-    // Faire en sorte que tout despawn pour changer de niveau
-
-    changeLevel(){
-        this.player.destroy();
-        this.npc.destroy();
-        this.mob.destroy();
-
-        if (player.setCollideWorldBounds(true)){
-                //this.scene.stop();
-                this.scene.start('level2');
-            }
-
-        // Créer un nouveau joueur dans le nouveau niveau
-        player = this.physics.add.sprite(100, 450, 'player');
-        player.setCollideWorldBounds(true);
-            
-
-        // Mettre à jour la caméra pour suivre le joueur dans le nouveau niveau
-        this.cameras.main.startFollow(player);
-
-        }
- */
+*/
 
 
 
@@ -207,21 +234,22 @@ class ZeldaLike extends Phaser.Scene{
 
 
 
-class level2 extends Phaser.Scene{
-    constructor(){
+
+class level2 extends Phaser.Scene {
+    constructor() {
         super("level2");
     }
 
-    init(data){this.position=data.positionZeldaLike;}
+    init(data) { this.position = data.positionZeldaLike; }
 
-    preload(){
+    preload() {
         this.load.image('player', 'assets/player.png');
         this.load.image('fond 2', 'assets/fond 2.png');
     }
 
-    create(){
+    create() {
         // Integration du background
-        this.add.image(0,0, 'fond 2').setOrigin(0, 0);
+        this.add.image(0, 0, 'fond 2').setOrigin(0, 0);
 
 
         // Create player sprite and enable physics
@@ -268,24 +296,24 @@ class level2 extends Phaser.Scene{
         } else {
             player.setVelocityX(0);
         }
-        
+
         if (cursorsUp.isDown) {
             player.setVelocityY(-160);
         } else if (cursorsDown.isDown) {
             player.setVelocityY(160);
-        } 
+        }
         else {
             player.setVelocityY(0);
         }
 
 
-        if (player.y <= 50){
+        if (player.y <= 50) {
             this.scenelevel2();
         };
 
-        
 
-}
+
+    }
 }
 
 var config = {
@@ -298,7 +326,7 @@ var config = {
             debug: false
         }
     },
-    scene: [ZeldaLike,level2],
+    scene: [ZeldaLike, level2],
 };
 
 new Phaser.Game(config);
