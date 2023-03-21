@@ -1,28 +1,5 @@
 var game = new Phaser.Game(config);
 
-var player;
-var npc;
-var cursorsUp;
-var cursorsLeft;
-var cursorsRight;
-var cursorsDown;
-
-
-
-//var mob;
-this.mob;
-this.mobX = true;
-this.temp = false;
-this.speedMob = 50;
-this.directionMob = 'right';
-this.modeAggro = false;
-this.diagoX = 0; // pour éviter déplacement diagonale rapide
-this.diagoY = 0;
-this.visionRange = 100;
-this.angleMob = 0; // sa direction, pas défaut à droite, (gauche : Math.PI, haut : Math.PI/2, bas : -Math.PI/2)
-this.fovMob = Math.PI / 4 // son champ de vision, 45 degrés ici
-
-
 
 class ZeldaLike extends Phaser.Scene {
 
@@ -47,17 +24,42 @@ class ZeldaLike extends Phaser.Scene {
 
     create() {
 
+
+        this.player;
+        this.npc;
+        this.cursorsUp;
+        this.cursorsLeft;
+        this.cursorsRight;
+        this.cursorsDown;
+
+
+
+        //var mob;
+        this.mob;
+        this.mobX = true;
+        this.temp = false;
+        this.speedMob = 50;
+        this.directionMob = 'right';
+        this.modeAggro = false;
+        this.diagoX = 0; // pour éviter déplacement diagonale rapide
+        this.diagoY = 0;
+        this.visionRange = 100;
+        this.angleMob = 0; // sa direction, pas défaut à droite, (gauche : Math.PI, haut : Math.PI/2, bas : -Math.PI/2)
+        this.fovMob = Math.PI / 4 // son champ de vision, 45 degrés ici
+
+
+
         // Integration du background
         this.add.image(0, 0, 'fond 1').setOrigin(0, 0);
 
 
         // Create player sprite and enable physics
-        player = this.physics.add.sprite(100, 450, 'player');
-        player.setCollideWorldBounds(true);
+        this.player = this.physics.add.sprite(100, 450, 'player');
+        this.player.setCollideWorldBounds(true);
 
 
         // Create NPC sprite and enable physics
-        npc = this.physics.add.staticSprite(700, 450, 'npc');
+        this.npc = this.physics.add.staticSprite(700, 450, 'npc');
         //npc.setCollideWorldBounds(true);
 
 
@@ -67,15 +69,10 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // Create cursors object for player movement
-        cursorsUp = this.input.keyboard.addKey('Z');
-        cursorsLeft = this.input.keyboard.addKey('Q')
-        cursorsRight = this.input.keyboard.addKey('D')
-        cursorsDown = this.input.keyboard.addKey('S')
-
-
-
-
-
+        this.cursorsUp = this.input.keyboard.addKey('Z');
+        this.cursorsLeft = this.input.keyboard.addKey('Q')
+        this.cursorsRight = this.input.keyboard.addKey('D')
+        this.cursorsDown = this.input.keyboard.addKey('S')
 
         // Create interact button
         this.interactButton = this.input.keyboard.addKey('E');
@@ -100,16 +97,16 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // Set up collision between player and npc
-        this.physics.add.collider(player, this.mob);
-        this.physics.add.collider(player, npc);
+        this.physics.add.collider(this.player, this.mob);
+        this.physics.add.collider(this.player, this.npc);
 
 
         // Set up overlap between player and npc for interaction
-        this.physics.add.overlap(player, npc, this.showDialogue);
+        this.physics.add.overlap(this.player, npc, this.showDialogue);
 
 
         // Set up overlap between player and mob for attack
-        this.physics.add.overlap(player, this.mob, this.showAttack);
+        this.physics.add.overlap(this.player, this.mob, this.showAttack);
 
 
         // Detecter la collision entre le bord du monde et le perso pour load la nouvelle map
@@ -132,21 +129,21 @@ class ZeldaLike extends Phaser.Scene {
 
     update() {
         // Player movement
-        if (cursorsLeft.isDown) {
-            player.setVelocityX(-160);
-        } else if (cursorsRight.isDown) {
-            player.setVelocityX(160);
+        if (this.cursorsLeft.isDown) {
+            this.player.setVelocityX(-160);
+        } else if (this.cursorsRight.isDown) {
+            this.player.setVelocityX(160);
         } else {
-            player.setVelocityX(0);
+            this.player.setVelocityX(0);
         }
 
-        if (cursorsUp.isDown) {
-            player.setVelocityY(-160);
-        } else if (cursorsDown.isDown) {
-            player.setVelocityY(160);
+        if (this.cursorsUp.isDown) {
+            this.player.setVelocityY(-160);
+        } else if (this.cursorsDown.isDown) {
+            this.player.setVelocityY(160);
         }
         else {
-            player.setVelocityY(0);
+            this.player.setVelocityY(0);
         }
 
 
@@ -154,32 +151,35 @@ class ZeldaLike extends Phaser.Scene {
             this.scenelevel2();
         };
 
+        if (this.interactButton.isDown) {
+            dialogue();
+        }
 
 
+    }
+
+    dialogue() {
+        //Hide dialogue box when interact button is released
+        this.dialogueBox.visible = false;
+        this.dialogueText.setText('');
     }
 
     scenelevel2() {
-        this.scene.start("level2")
+        this.scene.start("level2");
     }
 
+
 }
 
-
-//Hide dialogue box when interact button is released
-if (this.interactButton.isDown) {
-    this.dialogueBox.visible = false;
-    this.dialogueText.setText('');
-}
 
 /*
-
 function showAttack(){
     // Generate sentence attack
     var attackTxt = [
         "Tu attaques !"
     ];
     // var attack = attackTxt[randomIndex];
-
+/*
     // Show the sentence when attack is true
     if ((this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.SPACE))) {
         this.dialogueBox.visible = true;
@@ -315,6 +315,8 @@ class level2 extends Phaser.Scene {
 
     }
 }
+
+
 
 var config = {
     type: Phaser.AUTO,
