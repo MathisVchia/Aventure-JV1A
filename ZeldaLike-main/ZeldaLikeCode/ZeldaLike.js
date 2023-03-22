@@ -36,17 +36,26 @@ class ZeldaLike extends Phaser.Scene {
 
         //var mob;
         this.mob;
-        this.mobX = true;
-        this.temp = false;
-        this.speedMob = 50;
-        this.directionMob = 'right';
-        this.modeAggro = false;
-        this.diagoX = 0; // pour éviter déplacement diagonale rapide
-        this.diagoY = 0;
-        this.visionRange = 100;
-        this.angleMob = 0; // sa direction, pas défaut à droite, (gauche : Math.PI, haut : Math.PI/2, bas : -Math.PI/2)
-        this.fovMob = Math.PI / 4 // son champ de vision, 45 degrés ici
 
+        //var texte
+        this.attackTxt = [
+            "Tu attaques !"
+        ];
+        this.attack = this.attackTxt[this.randomIndex];
+        this.visible;
+
+
+        //var dialogue
+        this.dialogue1 = [
+            "Ah tu es enfin là!",
+        ];
+        this.dialogues;
+        this.randomIndex;
+        this.dialogues;
+        this.randomIndex;
+        
+
+    
 
 
         // Integration du background
@@ -102,7 +111,7 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // Set up overlap between player and npc for interaction
-        this.physics.add.overlap(this.player, npc, this.showDialogue);
+        this.physics.add.overlap(this.player, this.npc, this.showDialogue);
 
 
         // Set up overlap between player and mob for attack
@@ -147,16 +156,43 @@ class ZeldaLike extends Phaser.Scene {
         }
 
 
-        if (player.y <= 50) {
-            this.scenelevel2();
-        };
+        //if (this.player.y <= 10) {
+            //this.scenelevel2();
+        //};
 
+        //Pour l'instant appuyer sur E fait apparaitre une phrase et lacher le bouton fait disparaitre la phrase. A CHANGER pour ne pas avoir a maintenir
         if (this.interactButton.isDown) {
-            dialogue();
+            this.showDialogue();
+        }
+        else{
+            this.dialogue();
+        }
+
+        //if (this.interactButton.isDown) {
+            //this.dialogue();
+        //}
+
+        if (this.attackButton.isDown) {
+            this.showAttack();
+            this.mob.visible = false;
+            //this.dialogue();
         }
 
 
+        if (this.player.setCollideWorldBounds(true)){
+            this.changeLevel();
+        }
+
     }
+
+    //FONCTIONS
+    showDialogue() {
+        // Show dialogue box and text
+        
+            this.dialogueBox.visible = true;
+            this.dialogueText.setText(this.dialogue1);
+    
+        }
 
     dialogue() {
         //Hide dialogue box when interact button is released
@@ -169,40 +205,36 @@ class ZeldaLike extends Phaser.Scene {
     }
 
 
+    showAttack(){
+            
+        //this.dialogueText.setText(this.attackTxt);
+        //this.mob.visible = false;
+    }
+
+
+    changeLevel(){
+        this.player.destroy();
+        this.npc.destroy();
+        this.mob.destroy();
+        
+        this.scene.start('level2');
+    
+        // Créer un nouveau joueur dans le nouveau niveau
+        this.player = this.physics.add.sprite(100, 450, 'player');
+        this.player.setCollideWorldBounds(true);
+    
+    
+        // Mettre à jour la caméra pour suivre le joueur dans le nouveau niveau
+        this.cameras.main.startFollow(this.player);
+    
+    }
+
+
 }
 
 
 /*
-function showAttack(){
-    // Generate sentence attack
-    var attackTxt = [
-        "Tu attaques !"
-    ];
-    // var attack = attackTxt[randomIndex];
-/*
-    // Show the sentence when attack is true
-    if ((this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.SPACE))) {
-        this.dialogueBox.visible = true;
-        this.dialogueText.setText(this.attackTxt);
-        this.mob.visible = false;
-    }
-}
 
-function showDialogue() {
-    // Generate a random dialogue
-    var dialogue = [
-        "Ah tu es enfin là!",
-    ];
-    //var randomIndex = Math.floor(Math.random() * dialogues.length);
-    //var dialogue = dialogues[randomIndex];
-
-    // Show dialogue box and text
-    if ((this.input.keyboard.isDown(Phaser.Input.Keyboard.KeyCodes.Z))) {
-        this.dialogueBox.visible = true;
-        this.dialogueText.setText(this.dialogue);
-
-    }
-}
 
 // Faire en sorte que tout despawn pour changer de niveau
 
@@ -240,7 +272,7 @@ class level2 extends Phaser.Scene {
         super("level2");
     }
 
-    init(data) { this.position = data.positionZeldaLike; }
+    init(data) { this.position = this.data.positionZeldaLike; }
 
     preload() {
         this.load.image('player', 'assets/player.png');
@@ -253,8 +285,8 @@ class level2 extends Phaser.Scene {
 
 
         // Create player sprite and enable physics
-        player = this.physics.add.sprite(100, 450, 'player');
-        player.setCollideWorldBounds(true);
+        this.player = this.physics.add.sprite(100, 450, 'player');
+        this.player.setCollideWorldBounds(true);
 
 
         // Create NPC sprite and enable physics
@@ -268,10 +300,10 @@ class level2 extends Phaser.Scene {
 
 
         // Create cursors object for player movement
-        cursorsUp = this.input.keyboard.addKey('Z');
-        cursorsLeft = this.input.keyboard.addKey('Q')
-        cursorsRight = this.input.keyboard.addKey('D')
-        cursorsDown = this.input.keyboard.addKey('S')
+        this.cursorsUp = this.input.keyboard.addKey('Z');
+        this.cursorsLeft = this.input.keyboard.addKey('Q')
+        this.cursorsRight = this.input.keyboard.addKey('D')
+        this.cursorsDown = this.input.keyboard.addKey('S')
 
 
 
@@ -289,27 +321,22 @@ class level2 extends Phaser.Scene {
 
     update() {
         // Player movement
-        if (cursorsLeft.isDown) {
-            player.setVelocityX(-160);
-        } else if (cursorsRight.isDown) {
-            player.setVelocityX(160);
+        if (this.cursorsLeft.isDown) {
+            this.player.setVelocityX(-160);
+        } else if (this.cursorsRight.isDown) {
+            this.player.setVelocityX(160);
         } else {
-            player.setVelocityX(0);
+            this.player.setVelocityX(0);
         }
 
-        if (cursorsUp.isDown) {
-            player.setVelocityY(-160);
-        } else if (cursorsDown.isDown) {
-            player.setVelocityY(160);
+        if (this.cursorsUp.isDown) {
+            this.player.setVelocityY(-160);
+        } else if (this.cursorsDown.isDown) {
+            this.player.setVelocityY(160);
         }
         else {
-            player.setVelocityY(0);
+            this.player.setVelocityY(0);
         }
-
-
-        if (player.y <= 50) {
-            this.scenelevel2();
-        };
 
 
 
@@ -320,8 +347,8 @@ class level2 extends Phaser.Scene {
 
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     physics: {
         default: 'arcade',
         arcade: {
