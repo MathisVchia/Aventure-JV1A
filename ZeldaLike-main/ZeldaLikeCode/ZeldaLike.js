@@ -242,15 +242,18 @@ class ZeldaLike extends Phaser.Scene {
 
 
     checkSpeak() {
-        this.canSpeak = false;
-        this.dialogueBox.visible = true;
-        this.dialogueText.setText(this.dialogue1[0]);
-        this.time.delayedCall(5000, function () {
+            this.canSpeak = false;
+            this.dialogueBox.visible = true;
+            this.dialogueText.setText(this.dialogue1[0]);
+            this.time.delayedCall(5000, function () {
+                this.canSpeak = true;
+                this.dialogueBox.visible = false;
+                this.dialogueText.setText('');
+            }, [], this);
+
+        this.physics.world.collide(this.player, this.mob, () => {
             this.canSpeak = true;
-            this.dialogueBox.visible = false;
-            this.dialogueText.setText('');
-        }, [], this);
-        
+        }, null, this);
 
         
     }
