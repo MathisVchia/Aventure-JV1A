@@ -8,6 +8,8 @@ class ZeldaLike extends Phaser.Scene {
         this.angleMob = 0;
         this.visionRange = 200;
         this.modeAggro = false;
+        this.canAttack = true;
+        this.canSpeak = true;
     }
 
     preload() {
@@ -49,7 +51,6 @@ class ZeldaLike extends Phaser.Scene {
         this.dialogue1 = [
             "Ah tu es enfin là!",
         ];
-        this.dialogues;
         this.randomIndex;
         this.dialogues;
         this.randomIndex;
@@ -111,20 +112,21 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // Set up overlap between player and npc for interaction
-        this.physics.add.overlap(this.player, this.npc, this.showDialogue);
+        this.physics.add.overlap(this.player, this.mob, this.checkSpeak.bind(this));
 
 
         // Set up overlap between player and mob for attack
-        this.physics.add.overlap(this.player, this.mob, this.showAttack);
+        this.physics.add.overlap(this.player, this.mob, this.checkCollision.bind(this), this.showAttack);
 
 
         // Detecter la collision entre le bord du monde et le perso pour load la nouvelle map
         this.physics.world.setBoundsCollision(true, true, true, true);
-        this.physics.world.on('worldbounds', function (body) {
+        this.physics.world.on('worldbounds', (body) => {
             if (body.blocked.right) {
-                this.changeLevel();
+              this.changeLevel();
             }
-        }, this);
+          });
+
 
 
 
@@ -139,49 +141,50 @@ class ZeldaLike extends Phaser.Scene {
     update() {
         // Player movement
         if (this.cursorsLeft.isDown) {
-            this.player.setVelocityX(-160);
+            this.player.setVelocityX(-260);
         } else if (this.cursorsRight.isDown) {
-            this.player.setVelocityX(160);
+            this.player.setVelocityX(260);
         } else {
             this.player.setVelocityX(0);
         }
 
         if (this.cursorsUp.isDown) {
-            this.player.setVelocityY(-160);
+            this.player.setVelocityY(-260);
         } else if (this.cursorsDown.isDown) {
-            this.player.setVelocityY(160);
+            this.player.setVelocityY(260);
         }
         else {
             this.player.setVelocityY(0);
         }
 
 
-        //if (this.player.y <= 10) {
-            //this.scenelevel2();
-        //};
+        if (this.player.y <= 50) {
+            this.scenelevel2();
+        };
 
         //Pour l'instant appuyer sur E fait apparaitre une phrase et lacher le bouton fait disparaitre la phrase. A CHANGER pour ne pas avoir a maintenir
-        if (this.interactButton.isDown) {
-            this.showDialogue();
+        /*if (this.interactButton.isDown) {
+            
         }
         else{
-            this.dialogue();
+            this.noneDialogue();
         }
-
-        //if (this.interactButton.isDown) {
-            //this.dialogue();
-        //}
-
-        if (this.attackButton.isDown) {
-            this.showAttack();
-            this.mob.visible = false;
-            //this.dialogue();
-        }
+        
+*/
 
 
-        if (this.player.setCollideWorldBounds(true)){
+        if (this.player.y <= 30){
             this.changeLevel();
         }
+
+        if (this.canAttack && this.attackButton.isDown) {
+            this.checkCollision();
+        }
+
+        if (this.canSpeak && this.interactButton.isDown){
+            this.checkSpeak();
+        }
+
 
     }
 
@@ -190,11 +193,11 @@ class ZeldaLike extends Phaser.Scene {
         // Show dialogue box and text
         
             this.dialogueBox.visible = true;
-            this.dialogueText.setText(this.dialogue1);
+            this.dialogueText.setText(this.dialogue1[0]);
     
-        }
+    }
 
-    dialogue() {
+    noneDialogue() {
         //Hide dialogue box when interact button is released
         this.dialogueBox.visible = false;
         this.dialogueText.setText('');
@@ -205,13 +208,7 @@ class ZeldaLike extends Phaser.Scene {
     }
 
 
-    showAttack(){
-            
-        //this.dialogueText.setText(this.attackTxt);
-        //this.mob.visible = false;
-    }
-
-
+  
     changeLevel(){
         this.player.destroy();
         this.npc.destroy();
@@ -229,36 +226,37 @@ class ZeldaLike extends Phaser.Scene {
     
     }
 
+    checkCollision() {
+        this.physics.overlap(this.player, this.mob, () => {
+            if (this.canAttack) {
+                this.dialogueText.setText(this.attackTxt);
+                this.mob.visible = false;
+                this.canAttack = false;
+            }
+        }, null, this);
 
-}
-
-
-/*
-
-
-// Faire en sorte que tout despawn pour changer de niveau
-
-function changeLevel(){
-    this.player.destroy();
-    this.npc.destroy();
-    this.mob.destroy();
-
-    if (player.setCollideWorldBounds(true)) {
-        //this.scene.stop();
-        this.scene.start('level2');
+        this.physics.world.collide(this.player, this.mob, () => {
+            this.canAttack = true;
+        }, null, this);
     }
 
-    // Créer un nouveau joueur dans le nouveau niveau
-    this.player = this.physics.add.sprite(100, 450, 'player');
-    this.player.setCollideWorldBounds(true);
 
+    checkSpeak() {
+        this.canSpeak = false;
+        this.dialogueBox.visible = true;
+        this.dialogueText.setText(this.dialogue1[0]);
+        this.time.delayedCall(5000, function () {
+            this.canSpeak = true;
+            this.dialogueBox.visible = false;
+            this.dialogueText.setText('');
+        }, [], this);
+        
 
-    // Mettre à jour la caméra pour suivre le joueur dans le nouveau niveau
-    this.cameras.main.startFollow(this.player);
+        
+    }
+    
 
 }
-
-*/
 
 
 
