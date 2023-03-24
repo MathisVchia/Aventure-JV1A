@@ -1,6 +1,3 @@
-var game = new Phaser.Game(config);
-
-
 class ZeldaLike extends Phaser.Scene {
 
     constructor() {
@@ -19,10 +16,10 @@ class ZeldaLike extends Phaser.Scene {
         this.load.image('fond 1', 'assets/fond 1.png');
 
     // TILED - preload du tileset utilisé par Tiled pour créer la map
-        // this.load.image('balise_tiles' , 'sousDossier_OuSeTrouve_LeFichier(genre assets)/nomDuFichier.png');
+        this.load.image('tileset' , 'assets/tileset_ext_00.png');
         
     // TILED - preload du fichier json où se trouve la map créée sur Tiled
-        // this.load.tilemapTiledJSON('balise_map', 'nomDuFichier.json'); => le .json, c'est le fichier exporté depuis tiled. Vérifie que c'est bien json pendant l'export. 
+        this.load.tilemapTiledJSON('map', 'ZeldaLikeMap.json');
     }
 
     create() {
@@ -130,13 +127,23 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // TILED - load la map
-          //this.nomDeLaVariableMap = this.add.tilemap(' balise_map ');
+          this.map = this.add.tilemap('map');
 
         // TILED - load du tileset utilisé par la map dans Tiled
-          //this.nomDeLaVariableTileset = this.nomDeLaVariableMap.addTileset(' balise_tileset ', 'balise_tiles');
+          this.tileset = this.map.addTileset('tileset1', 'tileset');
 
         // TILED - load calque de tuiles utilisés dans Tiled
-          //this.solLayer(par exemple) = this.nomDeLaVariableMap.createLayer('nomDuCalqueDansTiled', this.nomDeLaVariableTileset)
+          this.solLayer = this.map.createLayer('sol', this.tileset);
+          this.decorsLayer = this.map.createLayer('decoration', this.tileset);
+
+        // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
+            // this.nomDuMonstre = this.physics.add.group();
+            // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
+            // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
+                //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
+                //this.monstre_create.anims.play('balise_animation_marche');
+                //this.nomDuMonstre.add(this.monstre_create);
+            //)};
 
         // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
           // this.nomDuMonstre = this.physics.add.group();
