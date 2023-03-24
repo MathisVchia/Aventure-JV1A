@@ -50,18 +50,57 @@ class ZeldaLike extends Phaser.Scene {
         this.dialogue1 = [
             "Ah tu es enfin là!",
         ];
+        this.dialogue2 = [
+            "Je t'attendais",
+        ];
         this.randomIndex;
         this.dialogues;
         this.randomIndex;
         
 
     
+        // TILED - load la map
+        this.map = this.add.tilemap('map');
+
+        // TILED - load du tileset utilisé par la map dans Tiled
+        this.tileset = this.map.addTilesetImage('tileset_ext_00', 'tileset');
+
+        // TILED - load calque de tuiles utilisés dans Tiled
+        this.solLayer = this.map.createLayer('sol', this.tileset);
+        this.decorsLayer = this.map.createLayer('decoration', this.tileset);
+        this.obstacleLayer = this.map.createLayer('obstacle', this.tileset);
+
+        this.obstacleLayer.setCollisionByProperty({ estSolide: true }); 
+
+        
+
+
+        // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
+            // this.nomDuMonstre = this.physics.add.group();
+            // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
+            // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
+                //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
+                //this.monstre_create.anims.play('balise_animation_marche');
+                //this.nomDuMonstre.add(this.monstre_create);
+            //)};
+
+        // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
+          // this.nomDuMonstre = this.physics.add.group();
+          // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
+          // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
+                //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
+                //this.monstre_create.anims.play('balise_animation_marche');
+                //this.nomDuMonstre.add(this.monstre_create);
+            //)};
 
 
         // Integration du background
         //this.add.image(0, 0, 'fond 1').setOrigin(0, 0);
 
         
+        // Create player sprite and enable physics
+        this.player = this.physics.add.sprite(200, 650, 'player');
+        this.player.setCollideWorldBounds(true);
 
 
         // Create NPC sprite and enable physics
@@ -95,16 +134,17 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // Create dialogue box and text
-        this.dialogueBox = this.add.graphics();
+        this.dialogueBox = this.add.graphics().setScrollFactor(0);
         this.dialogueBox.fillStyle(0x222222, 0.8);
         this.dialogueBox.fillRect(50, 50, 700, 100);
-        this.dialogueText = this.add.text(100, 70, '', { font: '24px Arial', fill: '#ffffff' });
+        this.dialogueText = this.add.text(100, 70, '', { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
         this.dialogueText.setWordWrapWidth(600);
 
 
         // Set up collision between player and npc
         this.physics.add.collider(this.player, this.mob);
         this.physics.add.collider(this.player, this.npc);
+        this.physics.add.collider(this.player, this.obstacleLayer)
 
 
         // Set up overlap between player and npc for interaction
@@ -124,46 +164,17 @@ class ZeldaLike extends Phaser.Scene {
           });
 
 
-        // TILED - load la map
-        this.map = this.add.tilemap('map');
-
-        // TILED - load du tileset utilisé par la map dans Tiled
-        this.tileset = this.map.addTilesetImage('tileset_ext_00', 'tileset');
-
-        // TILED - load calque de tuiles utilisés dans Tiled
-        this.solLayer = this.map.createLayer('sol', this.tileset);
-        this.decorsLayer = this.map.createLayer('decoration', this.tileset);
-
-        // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
-            // this.nomDuMonstre = this.physics.add.group();
-            // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
-            // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
-                //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
-                //this.monstre_create.anims.play('balise_animation_marche');
-                //this.nomDuMonstre.add(this.monstre_create);
-            //)};
-
-        // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
-          // this.nomDuMonstre = this.physics.add.group();
-          // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
-          // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
-                //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
-                //this.monstre_create.anims.play('balise_animation_marche');
-                //this.nomDuMonstre.add(this.monstre_create);
-            //)};
 
 
-        // Create player sprite and enable physics
-        this.player = this.physics.add.sprite(100, 450, 'player');
-        this.player.setCollideWorldBounds(true);
-
-
-        this.camera = this.cameras.main.setSize(1920, 1080);
+        this.camera = this.cameras.main.setSize(1920,1080);
 
 
         this.camera.startFollow(this.player);
             this.camera.setDeadzone(100,100);
-            this.camera.setBounds(0,0,1920,1080);
+            this.camera.setBounds(0,0,3200,3200);
+
+        
+        this.hauteurLayer = this.map.createLayer('hauteur', this.tileset);
 
 
 
@@ -281,10 +292,15 @@ class ZeldaLike extends Phaser.Scene {
             this.canSpeak = false;
             this.dialogueBox.visible = true;
             this.dialogueText.setText(this.dialogue1[0]);
-            this.time.delayedCall(5000, function () {
+            this.time.delayedCall(3000, function () {
                 this.canSpeak = true;
-                this.dialogueBox.visible = false;
-                this.dialogueText.setText('');
+                this.dialogueText.setText(this.dialogue2[0]);
+                this.time.delayedCall(5000, function () {
+                    this.canSpeak = true;
+                    this.dialogueText.setText(this.dialogue2[0]);
+                    this.dialogueBox.visible = false;
+                    this.dialogueText.setText('');
+                }, [], this);
             }, [], this);
 
         this.physics.world.collide(this.player, this.mob, () => {
@@ -384,8 +400,8 @@ class level2 extends Phaser.Scene {
 
 var config = {
     type: Phaser.AUTO,
-    width: 1920,
-    height: 1080,
+    width: 3200,
+    height: 3200,
     physics: {
         default: 'arcade',
         arcade: {
