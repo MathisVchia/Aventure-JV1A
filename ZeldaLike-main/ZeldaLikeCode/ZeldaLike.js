@@ -7,6 +7,7 @@ class ZeldaLike extends Phaser.Scene {
         this.modeAggro = false;
         this.canAttack = true;
         this.canSpeak = true;
+        this.camera;
     }
 
     preload() {
@@ -19,7 +20,7 @@ class ZeldaLike extends Phaser.Scene {
         this.load.image('tileset' , 'assets/tileset_ext_00.png');
         
     // TILED - preload du fichier json où se trouve la map créée sur Tiled
-        this.load.tilemapTiledJSON('map', 'ZeldaLikeMap.json');
+        this.load.tilemapTiledJSON('map', 'ZeldaLikeMapV1.json');
     }
 
     create() {
@@ -58,12 +59,9 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // Integration du background
-        this.add.image(0, 0, 'fond 1').setOrigin(0, 0);
+        //this.add.image(0, 0, 'fond 1').setOrigin(0, 0);
 
-
-        // Create player sprite and enable physics
-        this.player = this.physics.add.sprite(100, 450, 'player');
-        this.player.setCollideWorldBounds(true);
+        
 
 
         // Create NPC sprite and enable physics
@@ -127,14 +125,14 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // TILED - load la map
-          this.map = this.add.tilemap('map');
+        this.map = this.add.tilemap('map');
 
         // TILED - load du tileset utilisé par la map dans Tiled
-          this.tileset = this.map.addTileset('tileset1', 'tileset');
+        this.tileset = this.map.addTilesetImage('tileset_ext_00', 'tileset');
 
         // TILED - load calque de tuiles utilisés dans Tiled
-          this.solLayer = this.map.createLayer('sol', this.tileset);
-          this.decorsLayer = this.map.createLayer('decoration', this.tileset);
+        this.solLayer = this.map.createLayer('sol', this.tileset);
+        this.decorsLayer = this.map.createLayer('decoration', this.tileset);
 
         // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
             // this.nomDuMonstre = this.physics.add.group();
@@ -153,6 +151,19 @@ class ZeldaLike extends Phaser.Scene {
                 //this.monstre_create.anims.play('balise_animation_marche');
                 //this.nomDuMonstre.add(this.monstre_create);
             //)};
+
+
+        // Create player sprite and enable physics
+        this.player = this.physics.add.sprite(100, 450, 'player');
+        this.player.setCollideWorldBounds(true);
+
+
+        this.camera = this.cameras.main.setSize(1920, 1080);
+
+
+        this.camera.startFollow(this.player);
+            this.camera.setDeadzone(100,100);
+            this.camera.setBounds(0,0,1920,1080);
 
 
 
@@ -373,12 +384,12 @@ class level2 extends Phaser.Scene {
 
 var config = {
     type: Phaser.AUTO,
-    width: 1200,
-    height: 800,
+    width: 1920,
+    height: 1080,
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false
+            debug: true
         }
     },
     scene: [ZeldaLike, level2],
