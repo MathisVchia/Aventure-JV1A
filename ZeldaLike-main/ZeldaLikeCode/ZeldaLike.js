@@ -11,7 +11,8 @@ class ZeldaLike extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('player', 'assets/player.png');
+        this.load.spritesheet('player', 'assets/player.png',
+        { frameWidth: 36, frameHeight: 50 });
         this.load.image('npc', 'assets/npc.png');
         this.load.image('mob', 'assets/mob.png');
         this.load.image('fond 1', 'assets/fond 1.png');
@@ -99,7 +100,8 @@ class ZeldaLike extends Phaser.Scene {
 
         
         // Create player sprite and enable physics
-        this.player = this.physics.add.sprite(200, 650, 'player');
+        this.player = this.physics.add.sprite(500, 850, 'player');
+        this.player.setBounce(0.3);
         this.player.setCollideWorldBounds(true);
 
 
@@ -173,6 +175,44 @@ class ZeldaLike extends Phaser.Scene {
             this.camera.setDeadzone(100,100);
             this.camera.setBounds(0,0,3200,3200);
 
+
+
+
+        this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers('player', {start : 0 , end : 0}),
+            frameRate: 20,
+            repeat:-1
+        });
+
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('player', { start: 4, end: 7 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('player', { start: 8, end: 11 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        
+        this.anims.create({
+            key: 'down',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'up',
+            frames: this.anims.generateFrameNumbers('player', { start: 12, end: 15 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
         
         this.hauteurLayer = this.map.createLayer('hauteur', this.tileset);
 
@@ -189,19 +229,25 @@ class ZeldaLike extends Phaser.Scene {
         // Player movement
         if (this.cursorsLeft.isDown) {
             this.player.setVelocityX(-260);
+            this.player.anims.play('left', true);
         } else if (this.cursorsRight.isDown) {
             this.player.setVelocityX(260);
+            this.player.anims.play('right', true);
         } else {
             this.player.setVelocityX(0);
+            this.player.anims.play('idle', true);
         }
 
         if (this.cursorsUp.isDown) {
             this.player.setVelocityY(-260);
+            this.player.anims.play('up', true);
         } else if (this.cursorsDown.isDown) {
             this.player.setVelocityY(260);
+            this.player.anims.play('down', true);
         }
         else {
             this.player.setVelocityY(0);
+            this.player.anims.play('idle', true);
         }
 
 
