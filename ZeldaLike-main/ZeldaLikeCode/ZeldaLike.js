@@ -119,6 +119,7 @@ class Inside extends Phaser.Scene {
         this.sol = this.map1.createLayer('solMaison', this.tileset1);
         this.decors = this.map1.createLayer('murMaison', this.tileset1);
         this.porte = this.map1.createLayer('porteMaison', this.tileset1);
+        this.decorations = this.map1.createLayer('decorsMaison', this.tileset1);
 
         this.decors.setCollisionByProperty({ estSolide: true }); 
 
@@ -150,7 +151,7 @@ class Inside extends Phaser.Scene {
         
         // Create player sprite and enable physics
         this.player = this.physics.add.sprite(500, 850, 'player');
-        this.player.setBounce(0.3);
+        //this.player.setBounce(0.1);
         this.player.setCollideWorldBounds(true);
 
 
@@ -279,15 +280,12 @@ class Inside extends Phaser.Scene {
         if (this.cursorsLeft.isDown) {
             this.player.setVelocityX(-260);
             this.player.anims.play('left', true);
-        } else if (this.cursorsRight.isDown) {
+        }
+        else if (this.cursorsRight.isDown) {
             this.player.setVelocityX(260);
             this.player.anims.play('right', true);
-        } else {
-            this.player.setVelocityX(0);
-            this.player.anims.play('idle', true);
         }
-
-        if (this.cursorsUp.isDown) {
+        else if (this.cursorsUp.isDown) {
             this.player.setVelocityY(-260);
             this.player.anims.play('up', true);
         } else if (this.cursorsDown.isDown) {
@@ -295,14 +293,14 @@ class Inside extends Phaser.Scene {
             this.player.anims.play('down', true);
         }
         else {
-            this.player.setVelocityY(0);
+            this.player.setVelocity(0);
             this.player.anims.play('idle', true);
         }
 
 
-        if (this.player.y <= 50) {
-            this.scenelevel2();
-        };
+        //if (this.player.y <= 50) {
+            //this.scenelevel2();
+        //};
 
         //Pour l'instant appuyer sur E fait apparaitre une phrase et lacher le bouton fait disparaitre la phrase. A CHANGER pour ne pas avoir a maintenir
         /*if (this.interactButton.isDown) {
@@ -534,7 +532,6 @@ class ZeldaLike extends Phaser.Scene {
         
         // Create player sprite and enable physics
         this.player = this.physics.add.sprite(500, 850, 'player');
-        this.player.setBounce(0.3);
         this.player.setCollideWorldBounds(true);
 
 
@@ -660,28 +657,25 @@ class ZeldaLike extends Phaser.Scene {
 
     update() {
         // Player movement
-        if (this.cursorsLeft.isDown) {
-            this.player.setVelocityX(-260);
-            this.player.anims.play('left', true);
-        } else if (this.cursorsRight.isDown) {
-            this.player.setVelocityX(260);
-            this.player.anims.play('right', true);
-        } else {
-            this.player.setVelocityX(0);
-            this.player.anims.play('idle', true);
-        }
-
-        if (this.cursorsUp.isDown) {
-            this.player.setVelocityY(-260);
-            this.player.anims.play('up', true);
-        } else if (this.cursorsDown.isDown) {
-            this.player.setVelocityY(260);
-            this.player.anims.play('down', true);
-        }
-        else {
-            this.player.setVelocityY(0);
-            this.player.anims.play('idle', true);
-        }
+            if (this.cursorsLeft.isDown) {
+                this.player.setVelocityX(-260);
+                this.player.anims.play('left', true);
+            }
+            else if (this.cursorsRight.isDown) {
+                this.player.setVelocityX(260);
+                this.player.anims.play('right', true);
+            }
+            else if (this.cursorsUp.isDown) {
+                this.player.setVelocityY(-260);
+                this.player.anims.play('up', true);
+            } else if (this.cursorsDown.isDown) {
+                this.player.setVelocityY(260);
+                this.player.anims.play('down', true);
+            }
+            else {
+                this.player.setVelocity(0);
+                this.player.anims.play('idle', true);
+            }
 
 
         if (this.player.y <= 50) {
@@ -696,7 +690,7 @@ class ZeldaLike extends Phaser.Scene {
             this.noneDialogue();
         }
         
-*/
+        */
 
 
         if (this.player.y <= 30){
@@ -903,6 +897,7 @@ var config = {
             debug: true
         }
     },
+    pixelArt:true,
     scene: [Menu, Inside, ZeldaLike, level2],
 };
 
