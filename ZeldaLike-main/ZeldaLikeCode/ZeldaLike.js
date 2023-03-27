@@ -531,7 +531,7 @@ class ZeldaLike extends Phaser.Scene {
 
         
         // Create player sprite and enable physics
-        this.player = this.physics.add.sprite(500, 850, 'player');
+        this.player = this.physics.add.sprite(500, 1150, 'player');
         this.player.setCollideWorldBounds(true);
 
 
