@@ -4,6 +4,7 @@ class Menu extends Phaser.Scene {
         super("Menu");
         this.start;
         this.boutonStart; // déclarer la variable ici
+        this.startSpawn = false;
     }
 
     preload(){
@@ -30,6 +31,14 @@ class Menu extends Phaser.Scene {
 
     startGame(){
         this.scene.start('chambre');
+        this.firstSpawn();
+    }
+
+    firstSpawn(){
+        this.player = this.physics.add.sprite(267, 714, 'player');
+        //this.player.setBounce(0.1);
+        this.player.setCollideWorldBounds(true);
+        this.startSpawn = false;
     }
 }
 
@@ -57,8 +66,11 @@ class Inside extends Phaser.Scene {
         this.canAttack = true;
         this.canSpeak = true;
         this.camera;
-        this.changeLevem = false;
+        this.changeLevel = false;
+        this.changeLevelPorteAvant = false;
     }
+
+    // PRELOAD ________________________________________________________________________________________
 
     preload() {
         this.load.spritesheet('player', 'assets/player.png',
@@ -74,6 +86,9 @@ class Inside extends Phaser.Scene {
         this.load.tilemapTiledJSON('map1', 'maison.json');
     }
 
+
+
+    //  CREATE ________________________________________________________________________________________
     create() {
 
 
@@ -146,14 +161,18 @@ class Inside extends Phaser.Scene {
             //)};
 
 
-        // Integration du background
-        //this.add.image(0, 0, 'fond 1').setOrigin(0, 0);
-
+        
+// BUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
         
         // Create player sprite and enable physics
-        this.player = this.physics.add.sprite(500, 750, 'player');
-        //this.player.setBounce(0.1);
-        this.player.setCollideWorldBounds(true);
+        if (this.changeLevel1 = false){
+            this.firstSpawn();
+        }
+
+        else if (this.changeLevel1 = true){
+            this.secondSpawn();
+        }
+        
 
 
         // Create NPC sprite and enable physics
@@ -275,7 +294,7 @@ class Inside extends Phaser.Scene {
 
 
 
-
+    //UPDATE _____________________________________________________________________________________________________________
     update() {
         // Player movement
         if (this.cursorsLeft.isDown) {
@@ -316,9 +335,19 @@ class Inside extends Phaser.Scene {
 
 // Creation de porte Y = ligne horizontale a dépasser et les deux X deux limites pour zoner un carrer dans lequel entrer
         if (this.player.y < 126 && this.player.x > 735 && this.player.x < 800){
-            this.changeLevel();
+            this.changedLevel();
         }
 
+        if (this.player.y > 700 && this.player.x > 600 && this.player.x < 650){
+            this.changedLevelFront();
+        }
+
+
+
+
+        //if (this.player.y < 126 && this.player.x > 735 && this.player.x < 800){
+            //this.changedLevel();
+        //}
         //if (this.canAttack && this.attackButton.isDown) {
             //this.checkCollision();
         //}
@@ -331,6 +360,15 @@ class Inside extends Phaser.Scene {
     }
 
     //FONCTIONS
+
+    secondSpawn() {
+        this.player = this.physics.add.sprite(768, 137, 'player');
+        //this.player.setBounce(0.1);
+        this.player.setCollideWorldBounds(true);
+        this.changeLevel = false;
+    }
+
+
     showDialogue() {
         // Show dialogue box and text
         
@@ -351,23 +389,20 @@ class Inside extends Phaser.Scene {
 
 
   
-    changeLevel(){
-        this.player.destroy();
-        this.npc.destroy();
-        this.mob.destroy();
-        
+    changedLevel(){
         this.scene.start('jardin');
-    
-        // Créer un nouveau joueur dans le nouveau niveau
-        this.player = this.physics.add.sprite(1918, 1333, 'player');
-        this.player.setCollideWorldBounds(true);
         this.changeLevel = true;
-    
-    
-        // Mettre à jour la caméra pour suivre le joueur dans le nouveau niveau
-        this.cameras.main.startFollow(this.player);
-    
     }
+
+    changedLevelFront(){
+        this.scene.start('jardin');
+        this.changeLevelFront = true;
+    }
+    
+
+    
+
+    
 
     checkCollision() {
         this.physics.overlap(this.player, this.mob, () => {
@@ -414,14 +449,16 @@ class Inside extends Phaser.Scene {
 
 
 
-
+//_____________________________________________________________________________________________________________
+//_____________________________________________________________________________________________________________
 
 
 
 // SCENE DEHORS
 
 
-
+//_____________________________________________________________________________________________________________
+//_____________________________________________________________________________________________________________
 
 
 
@@ -444,6 +481,9 @@ class ZeldaLike extends Phaser.Scene {
         this.camera;
     }
 
+
+    //_____________________________________________________________________________________________________________
+
     preload() {
         this.load.spritesheet('player', 'assets/player.png',
         { frameWidth: 36, frameHeight: 50 });
@@ -457,6 +497,9 @@ class ZeldaLike extends Phaser.Scene {
     // TILED - preload du fichier json où se trouve la map créée sur Tiled
         this.load.tilemapTiledJSON('map', 'ZeldaLikeMapV1.json');
     }
+
+
+    //_____________________________________________________________________________________________________________
 
     create() {
 
@@ -529,21 +572,28 @@ class ZeldaLike extends Phaser.Scene {
             //)};
 
 
-        // Integration du background
-        //this.add.image(0, 0, 'fond 1').setOrigin(0, 0);
+        
 
         
         // Create player sprite and enable physics
         // Look if which door we pass
-        if (this.changeLevel = false){
-            this.player = this.physics.add.sprite(500, 1150, 'player');
-            this.player.setCollideWorldBounds(true);
-        }
+        
         if (this.changeLevel = true){
             this.player = this.physics.add.sprite(1918, 1333, 'player');
             this.player.setCollideWorldBounds(true);
+            this.changeLevel = false;
         }
 
+        else if (this.changeLevelFront = true){
+            this.player = this.physics.add.sprite(1695, 2527, 'player');
+            this.player.setCollideWorldBounds(true);
+            this.changeLevelFront = false;
+        }
+
+
+
+
+        
 
         // Create NPC sprite and enable physics
         this.npc = this.physics.add.staticSprite(700, 450, 'npc');
@@ -663,7 +713,7 @@ class ZeldaLike extends Phaser.Scene {
 
 
 
-
+    //_____________________________________________________________________________________________________________
 
     update() {
         // Player movement
@@ -704,10 +754,10 @@ class ZeldaLike extends Phaser.Scene {
 
 
         if (this.player.x > 1888 && this.player.x < 1951 && this.player.y > 1344 && this.player.y < 1375){
-            this.changeLevel1();
+            this.changedLevel1();
         }
         if (this.player.x > 2303 && this.player.x < 2367 && this.player.y > 1759 && this.player.y < 1855){
-            this.changeLevel2();
+            this.changedLevel2();
         }
         if (this.canAttack && this.attackButton.isDown) {
             this.checkCollision();
@@ -719,6 +769,10 @@ class ZeldaLike extends Phaser.Scene {
 
 
     }
+
+
+    //_____________________________________________________________________________________________________________
+
 
     //FONCTIONS
     showDialogue() {
@@ -741,12 +795,10 @@ class ZeldaLike extends Phaser.Scene {
 
 
   
-    changeLevel1(){
-        this.player.destroy();
-        this.npc.destroy();
-        this.mob.destroy();
+    changedLevel1(){
         
-        this.scene.start('insideHouse');
+        
+        this.scene.start('chambre');
     
         // Créer un nouveau joueur dans le nouveau niveau
         this.player = this.physics.add.sprite(100, 450, 'player');
@@ -760,10 +812,8 @@ class ZeldaLike extends Phaser.Scene {
     }
 
 
-    changeLevel2(){
-        this.player.destroy();
-        this.npc.destroy();
-        this.mob.destroy();
+    changedLevel2(){
+        
         
         this.scene.start('donjon1');
     
@@ -826,6 +876,8 @@ class ZeldaLike extends Phaser.Scene {
 
 
 
+//_____________________________________________________________________________________________________________
+//_____________________________________________________________________________________________________________
 
 
 
@@ -833,6 +885,8 @@ class ZeldaLike extends Phaser.Scene {
 
 
 
+//_____________________________________________________________________________________________________________
+//_____________________________________________________________________________________________________________
 
 
 
@@ -842,6 +896,9 @@ class ZeldaLike extends Phaser.Scene {
 
 
 class level2 extends Phaser.Scene {
+
+
+
     constructor() {
         super("donjon1");
         this.angleMob = 0;
@@ -851,6 +908,11 @@ class level2 extends Phaser.Scene {
         this.canSpeak = true;
         this.camera;
     }
+
+
+
+//_____________________________________________________________________________________________________________
+    
 
     preload() {
         this.load.spritesheet('player', 'assets/player.png',
@@ -865,6 +927,11 @@ class level2 extends Phaser.Scene {
     // TILED - preload du fichier json où se trouve la map créée sur Tiled
         this.load.tilemapTiledJSON('map2', 'donjon1.json');
     }
+
+
+
+//_____________________________________________________________________________________________________________
+
 
     create() {
 
@@ -944,13 +1011,10 @@ class level2 extends Phaser.Scene {
         
         // Create player sprite and enable physics
         // Look if which door we pass
-        if (this.changeLevel2 = false){
-            this.player = this.physics.add.sprite(500, 1150, 'player');
-            this.player.setCollideWorldBounds(true);
-        }
         if (this.changeLevel2 = true){
             this.player = this.physics.add.sprite(1213, 348, 'player');
             this.player.setCollideWorldBounds(true);
+            this.changeLevel2 = false;
         }
 
 
@@ -1010,7 +1074,7 @@ class level2 extends Phaser.Scene {
         this.physics.world.setBoundsCollision(true, true, true, true);
         this.physics.world.on('worldbounds', (body) => {
             if (body.blocked.right) {
-              this.changeLevel();
+              this.changedLevel();
             }
           });
 
@@ -1062,8 +1126,6 @@ class level2 extends Phaser.Scene {
             repeat: -1
         });
 
-        
-        this.hauteurLayer = this.map.createLayer('hauteur', this.tileset);
 
 
 
@@ -1072,6 +1134,7 @@ class level2 extends Phaser.Scene {
 
 
 
+    //_____________________________________________________________________________________________________________
 
 
     update() {
@@ -1097,10 +1160,6 @@ class level2 extends Phaser.Scene {
             }
 
 
-        if (this.player.y <= 50) {
-            this.scenelevel2();
-        };
-
         //Pour l'instant appuyer sur E fait apparaitre une phrase et lacher le bouton fait disparaitre la phrase. A CHANGER pour ne pas avoir a maintenir
         /*if (this.interactButton.isDown) {
             
@@ -1112,9 +1171,9 @@ class level2 extends Phaser.Scene {
         */
 
 
-        if (this.player.y <= 30){
-            this.changeLevel();
-        }
+        //if (this.player.y <= 30){
+            //this.changedLevel();
+        //}
 
         if (this.canAttack && this.attackButton.isDown) {
             this.checkCollision();
