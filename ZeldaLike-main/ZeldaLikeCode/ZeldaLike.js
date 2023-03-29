@@ -491,6 +491,8 @@ class ZeldaLike extends Phaser.Scene {
         this.camera;
     }
 
+    init(data){this.changeLevelFront=data.changeLevelFront;}
+
 
     //_____________________________________________________________________________________________________________
 
