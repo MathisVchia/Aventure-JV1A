@@ -65,7 +65,6 @@ class Inside extends Phaser.Scene {
         this.modeAggro = false;
         this.canAttack = true;
         this.canSpeak = true;
-        this.camera;
         this.changeLevel = false;
         this.changeLevelFront = false;
     }
@@ -102,6 +101,7 @@ class Inside extends Phaser.Scene {
         this.cursorsLeft;
         this.cursorsRight;
         this.cursorsDown;
+        this.camera;
 
 
 
@@ -248,10 +248,8 @@ class Inside extends Phaser.Scene {
 
 
 
-        this.camera = this.cameras.main.setSize(1920,1080);
-
-
-        this.camera.startFollow(this.player);
+          this.camera = this.cameras.main.setSize(1920,1080);
+            this.camera.startFollow(this.player);
             this.camera.setDeadzone(50,50);
             this.camera.setBounds(0,0,3200,3200);
 
@@ -400,13 +398,13 @@ class Inside extends Phaser.Scene {
 
   
     changedLevel(){
-        this.scene.start('jardin');
         this.changeLevel = true;
+        this.scene.start('jardin', {porteHaut : true});
     }
 
     changedLevelFront(){
-        this.scene.start('jardin');
         this.changeLevelFront = true;
+        this.scene.start('jardin', {porteBas : true});
     }
     
 
@@ -491,9 +489,8 @@ class ZeldaLike extends Phaser.Scene {
         this.camera;
     }
 
-    init(data){this.changeLevelFront=data.changeLevelFront;}
-
-
+    init(data){this.porteHaut=data.porteHaut, this.porteBas = data.porteBas};
+    
     //_____________________________________________________________________________________________________________
 
     preload() {
@@ -599,18 +596,20 @@ class ZeldaLike extends Phaser.Scene {
         
         // Create player sprite and enable physics
         // Look if which door we pass
-        console.log(this.changeLevel)
-        if (this.changeLevel = true){
+        console.log(this.porteHaut);
+        if (this.porteHaut == true){
+            console.log("ChangeLevelSimple");
             this.player = this.physics.add.sprite(1918, 1333, 'player');
             this.player.setCollideWorldBounds(true);
             this.changeLevel = false;
         }
-        else if (this.changeLevelFront = true){
+        else if (this.porteBas == true){
+            console.log("ChangeLevelFront");
             this.player = this.physics.add.sprite(1695, 2527, 'player');
             this.player.setCollideWorldBounds(true);
             this.changeLevelFront = false;
         }
-        console.log(this.changeLevelFront);
+        console.log(this.player);
 
 
 
@@ -671,21 +670,21 @@ class ZeldaLike extends Phaser.Scene {
 
         // Detecter la collision entre le bord du monde et le perso pour load la nouvelle map
         this.physics.world.setBoundsCollision(true, true, true, true);
+        /*
         this.physics.world.on('worldbounds', (body) => {
             if (body.blocked.right) {
               this.changeLevel();
             }
           });
+        */
 
+          
 
-
-
+        
         this.camera = this.cameras.main.setSize(1920,1080);
-
-
         this.camera.startFollow(this.player);
-            this.camera.setDeadzone(50,50);
-            this.camera.setBounds(10,10,3200,3200);
+        this.camera.setDeadzone(50,50);
+        this.camera.setBounds(10,10,3200,3200);
 
 
 
