@@ -67,7 +67,7 @@ class Inside extends Phaser.Scene {
         this.canSpeak = true;
         this.camera;
         this.changeLevel = false;
-        this.changeLevelPorteAvant = false;
+        this.changeLevelFront = false;
     }
 
     // PRELOAD ________________________________________________________________________________________
@@ -84,6 +84,10 @@ class Inside extends Phaser.Scene {
         
     // TILED - preload du fichier json où se trouve la map créée sur Tiled
         this.load.tilemapTiledJSON('map1', 'maison.json');
+
+        this.load.image('fullLife', 'assets/FullLife.png');
+        this.load.image('piece', 'assets/piece.png');
+        this.load.image('poche', 'assets/poche.png');
     }
 
 
@@ -98,6 +102,7 @@ class Inside extends Phaser.Scene {
         this.cursorsLeft;
         this.cursorsRight;
         this.cursorsDown;
+
 
 
 
@@ -117,7 +122,7 @@ class Inside extends Phaser.Scene {
             "Ah tu es enfin réveillé ! Je t'attendais !",
         ];
         this.dialogue2 = [
-            "Maintenant que papa et maman s'ont sorti, tu vas jouer à mon petit jeu, j'ai créé pour toi un donjon dans la cave de la maison, à toi de t'y rendre !",
+            "Maintenant que papa et maman sont sorti, tu vas jouer à mon petit jeu, j'ai créé pour toi un donjon dans la cave de la maison, à toi de t'y rendre !",
         ];
         this.randomIndex;
         this.dialogues;
@@ -137,7 +142,12 @@ class Inside extends Phaser.Scene {
         this.porte = this.map1.createLayer('porteMaison', this.tileset1);
         this.decorations = this.map1.createLayer('decorsMaison', this.tileset1);
 
-        this.decors.setCollisionByProperty({ estSolide: true }); 
+        this.decors.setCollisionByProperty({ estSolide: true });
+        
+        this.add.image(55,40,'fullLife').setScale(2,2).setScrollFactor(0);
+        this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
+        this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
+        this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
 
         
 
@@ -208,8 +218,8 @@ class Inside extends Phaser.Scene {
         // Create dialogue box and text
         this.dialogueBox = this.add.graphics().setScrollFactor(0);
         this.dialogueBox.fillStyle(0x222222, 0.8);
-        this.dialogueBox.fillRect(50, 50, 700, 100);
-        this.dialogueText = this.add.text(100, 70, '', { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
+        this.dialogueBox.fillRect(500, 750, 800, 100);
+        this.dialogueText = this.add.text(550, 750, '', { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
         this.dialogueText.setWordWrapWidth(600);
 
 
@@ -242,7 +252,7 @@ class Inside extends Phaser.Scene {
 
 
         this.camera.startFollow(this.player);
-            this.camera.setDeadzone(100,100);
+            this.camera.setDeadzone(50,50);
             this.camera.setBounds(0,0,3200,3200);
 
 
@@ -426,7 +436,7 @@ class Inside extends Phaser.Scene {
             this.time.delayedCall(3000, function () {
                 this.canSpeak = true;
                 this.dialogueText.setText(this.dialogue2[0]);
-                this.time.delayedCall(5000, function () {
+                this.time.delayedCall(8000, function () {
                     this.canSpeak = true;
                     this.dialogueText.setText(this.dialogue2[0]);
                     this.dialogueBox.visible = false;
@@ -496,6 +506,11 @@ class ZeldaLike extends Phaser.Scene {
         
     // TILED - preload du fichier json où se trouve la map créée sur Tiled
         this.load.tilemapTiledJSON('map', 'ZeldaLikeMapV1.json');
+        
+
+        this.load.image('fullLife', 'assets/FullLife.png');
+        this.load.image('piece', 'assets/piece.png');
+        this.load.image('poche', 'assets/poche.png');
     }
 
 
@@ -550,6 +565,11 @@ class ZeldaLike extends Phaser.Scene {
 
         this.obstacleLayer.setCollisionByProperty({ estSolide: true }); 
 
+        this.add.image(55,40,'fullLife').setScale(2,2).setScrollFactor(0);
+        this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
+        this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
+        this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
+
         
 
 
@@ -577,18 +597,18 @@ class ZeldaLike extends Phaser.Scene {
         
         // Create player sprite and enable physics
         // Look if which door we pass
-        
+        console.log(this.changeLevel)
         if (this.changeLevel = true){
             this.player = this.physics.add.sprite(1918, 1333, 'player');
             this.player.setCollideWorldBounds(true);
             this.changeLevel = false;
         }
-
         else if (this.changeLevelFront = true){
             this.player = this.physics.add.sprite(1695, 2527, 'player');
             this.player.setCollideWorldBounds(true);
             this.changeLevelFront = false;
         }
+        console.log(this.changeLevelFront);
 
 
 
@@ -628,8 +648,8 @@ class ZeldaLike extends Phaser.Scene {
         // Create dialogue box and text
         this.dialogueBox = this.add.graphics().setScrollFactor(0);
         this.dialogueBox.fillStyle(0x222222, 0.8);
-        this.dialogueBox.fillRect(50, 50, 700, 100);
-        this.dialogueText = this.add.text(100, 70, '', { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
+        this.dialogueBox.fillRect(500, 750, 800, 100);
+        this.dialogueText = this.add.text(550, 750, '', { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
         this.dialogueText.setWordWrapWidth(600);
 
 
@@ -662,8 +682,8 @@ class ZeldaLike extends Phaser.Scene {
 
 
         this.camera.startFollow(this.player);
-            this.camera.setDeadzone(100,100);
-            this.camera.setBounds(0,0,3200,3200);
+            this.camera.setDeadzone(50,50);
+            this.camera.setBounds(10,10,3200,3200);
 
 
 
