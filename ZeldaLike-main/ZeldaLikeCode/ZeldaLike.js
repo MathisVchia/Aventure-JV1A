@@ -506,6 +506,10 @@ class ZeldaLike extends Phaser.Scene {
         this.load.image('npc', 'assets/npc.png');
         this.load.image('mob', 'assets/mob.png');
         this.load.image('fond 1', 'assets/fond 1.png');
+        this.load.image('sword_x_left', 'assets/sword_x_left.png');
+        this.load.image('sword_x_right', 'assets/sword_x_right.png');
+        this.load.image('sword_y_up', 'assets/sword_y_up.png');
+        this.load.image('sword_y_down', 'assets/sword_y_down.png');
 
     // TILED - preload du tileset utilisé par Tiled pour créer la map
         this.load.image('tileset' , 'assets/tileset_ext_00.png');
@@ -531,6 +535,10 @@ class ZeldaLike extends Phaser.Scene {
         this.cursorsLeft;
         this.cursorsRight;
         this.cursorsDown;
+        this.faceLeft = false;
+        this.faceRight = false;
+        this.faceUp = false;
+        this.faceDown = false;
 
 
 
@@ -575,6 +583,11 @@ class ZeldaLike extends Phaser.Scene {
         this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
         this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
         this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
+        this.attaque_sword_left = this.physics.add.sprite(0,0, 'sword_x_left');
+        this.attaque_sword_right = this.physics.add.sprite(0,0, 'sword_x_right');
+        this.attaque_sword_up = this.physics.add.sprite(0,0, 'sword_y_up');
+        this.attaque_sword_down = this.physics.add.sprite(0,0, 'sword_y_down');
+
 
         
 
@@ -650,7 +663,7 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // Create attack button
-        this.attackButton = this.input.keyboard.addKey('SPACE');
+        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
 
 
@@ -683,6 +696,7 @@ class ZeldaLike extends Phaser.Scene {
 
         // Detecter la collision entre le bord du monde et le perso pour load la nouvelle map
         this.physics.world.setBoundsCollision(true, true, true, true);
+
        
 
           
@@ -744,26 +758,95 @@ class ZeldaLike extends Phaser.Scene {
     //_____________________________________________________________________________________________________________
 
     update() {
-        // Player movement
-            if (this.cursorsLeft.isDown) {
-                this.player.setVelocityX(-260);
-                this.player.anims.play('left', true);
+
+        //Player moves
+        if (this.cursorsLeft.isDown ) {
+            this.player.setVelocityX(-260);
+            this.player.anims.play('left', true);
+            this.faceLeft = true;
+            this.faceRight = false;
+            this.faceUp = false;
+            this.faceDown = false;
+        }
+        else if (this.cursorsRight.isDown) {
+            this.player.setVelocityX(260);
+            this.player.anims.play('right', true);
+            this.faceLeft = false;
+            this.faceRight = true;
+            this.faceUp = false;
+            this.faceDown = false;
+        }
+        else if (this.cursorsUp.isDown) {
+            this.player.setVelocityY(-260);
+            this.player.anims.play('up', true);
+            this.faceLeft = false;
+            this.faceRight = false;
+            this.faceUp = true;
+            this.faceDown = false;
+
+        } else if (this.cursorsDown.isDown) {
+            this.player.setVelocityY(260);
+            this.player.anims.play('down', true);
+            this.faceLeft = false;
+            this.faceRight = false;
+            this.faceUp = false;
+            this.faceDown = true;
+        }
+        else {
+            this.player.setVelocity(0);
+            this.player.anims.play('idle', true);
+        }
+
+
+        // Player attack
+        if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
+            this.clean_sword();
+            
+
+
+            if (this.faceLeft == true) {
+                this.player.setVelocityX(0);
+                this.player.setVelocityY(0);
+                this.attaque_sword_left.x = (this.player.x - 32);
+                this.attaque_sword_left.y = (this.player.y);
+                this.time.delayedCall(300, () => {
+                    this.attaque_sword_left.disableBody(true,true);
+                })
+                
             }
-            else if (this.cursorsRight.isDown) {
-                this.player.setVelocityX(260);
-                this.player.anims.play('right', true);
+            else if (this.faceRight == true) {
+                this.player.setVelocityX(0);
+                this.player.setVelocityY(0);
+                this.attaque_sword_right.x = (this.player.x + 32);
+                this.attaque_sword_right.y = (this.player.y);
+                this.time.delayedCall(300, () => {
+                    this.attaque_sword_right.disableBody(true,true);
+                })
+                
             }
-            else if (this.cursorsUp.isDown) {
-                this.player.setVelocityY(-260);
-                this.player.anims.play('up', true);
-            } else if (this.cursorsDown.isDown) {
-                this.player.setVelocityY(260);
-                this.player.anims.play('down', true);
+            else if (this.faceUp == true) {
+                this.player.setVelocityX(0);
+                this.player.setVelocityY(0);
+                this.attaque_sword_up.x = (this.player.x);
+                this.attaque_sword_up.y = (this.player.y - 32);
+                this.time.delayedCall(300, () => {
+                    this.attaque_sword_up.disableBody(true,true);
+                })
+              
+            } 
+            else if (this.faceDown == true) {
+                this.player.setVelocityX(0);
+                this.player.setVelocityY(0);
+                this.attaque_sword_down.x = (this.player.x);
+                this.attaque_sword_down.y = (this.player.y + 32);
+                this.time.delayedCall(300, () => {
+                    this.attaque_sword_down.disableBody(true,true);
+                })
+                
             }
-            else {
-                this.player.setVelocity(0);
-                this.player.anims.play('idle', true);
-            }
+        }
+
+
 
 
         //if (this.player.y <= 50) {
@@ -814,6 +897,36 @@ class ZeldaLike extends Phaser.Scene {
 
 
     //FONCTIONS
+
+    // fais disparaître la zone de frappe après le coup
+    clean_sword() {
+        this.attaque_sword_left.enableBody(true, true);
+        this.attaque_sword_right.enableBody(true, true);
+        this.attaque_sword_up.enableBody(true, true);
+        this.attaque_sword_down.enableBody(true, true);
+        this.attaque_sword_left.visible = true;
+        this.attaque_sword_right.visible = true;
+        this.attaque_sword_up.visible = true;
+        this.attaque_sword_down.visible = true;
+    }
+
+    // booléenne pour activer clean_sword
+    if_clean_sword() {
+        if (this.trigger_cleanSword == true) {
+            this.trigger_cleanSword = false;
+            return true
+        }
+        else {
+            return false
+        }
+    }
+
+    //Débloque l'attaque CaC
+    delock_attaque() {
+        this.player_block = false;
+        this.trigger_cleanSword = true;
+    }
+
     showDialogue(){
         // Show dialogue box and text
         
@@ -961,7 +1074,7 @@ class level2 extends Phaser.Scene {
         this.load.image('mob', 'assets/mob.png');
 
     // TILED - preload du tileset utilisé par Tiled pour créer la map
-        this.load.image('tileset2' , 'assets/tileset_ext_00.png');
+        this.load.image('tileset2' , 'assets/tileset_donj_00.png');
         
     // TILED - preload du fichier json où se trouve la map créée sur Tiled
         this.load.tilemapTiledJSON('map2', 'donjon1.json');
@@ -1017,7 +1130,7 @@ create() {
     this.map2 = this.add.tilemap('map2');
 
     // TILED - load du tileset utilisé par la map dans Tiled
-    this.tileset2 = this.map2.addTilesetImage('tileset_ext_00', 'tileset2');
+    this.tileset2 = this.map2.addTilesetImage('tileset_donj_00', 'tileset2');
 
     // TILED - load calque de tuiles utilisés dans Tiled
     this.solDonjon1 = this.map2.createLayer('solDonjon1', this.tileset2);
