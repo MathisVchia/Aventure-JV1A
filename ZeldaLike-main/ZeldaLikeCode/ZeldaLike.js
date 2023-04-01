@@ -75,7 +75,7 @@ class Inside extends Phaser.Scene {
     preload() {
         this.load.spritesheet('player', 'assets/player.png',
         { frameWidth: 36, frameHeight: 50 });
-        this.load.image('npc', 'assets/npc.png');
+        this.load.image('npc', 'assets/littleSister.png');
         //this.load.image('mob', 'assets/mob.png');
         //this.load.image('fond 1', 'assets/fond 1.png');
 
@@ -503,8 +503,8 @@ class ZeldaLike extends Phaser.Scene {
     preload() {
         this.load.spritesheet('player', 'assets/player.png',
         { frameWidth: 36, frameHeight: 50 });
-        this.load.image('npc', 'assets/npc.png');
-        this.load.image('mob', 'assets/mob.png');
+        this.load.image('npc', 'assets/littleSister.png');
+        this.load.image('mob', 'assets/mobBlob.png');
         this.load.image('fond 1', 'assets/fond 1.png');
         this.load.image('sword_x_left', 'assets/sword_x_left.png');
         this.load.image('sword_x_right', 'assets/sword_x_right.png');
@@ -1070,8 +1070,8 @@ class level2 extends Phaser.Scene {
     preload() {
         this.load.spritesheet('player', 'assets/player.png',
         { frameWidth: 36, frameHeight: 50 });
-        this.load.image('npc', 'assets/npc.png');
-        this.load.image('mob', 'assets/mob.png');
+        this.load.image('npc', 'assets/littleSister.png');
+        //this.load.image('mob', 'assets/mob.png');
 
     // TILED - preload du tileset utilisé par Tiled pour créer la map
         this.load.image('tileset2' , 'assets/tileset_donj_00.png');
