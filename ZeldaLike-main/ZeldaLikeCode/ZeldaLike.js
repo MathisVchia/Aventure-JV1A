@@ -207,8 +207,8 @@ class Inside extends Phaser.Scene {
 
 
         // Create NPC sprite and enable physics
-        this.mob = this.physics.add.sprite(300, 450, 'mob');
-        this.mob.setCollideWorldBounds(true);
+        //this.mob = this.physics.add.sprite(300, 450, 'mob');
+        //this.mob.setCollideWorldBounds(true);
 
 
         // Create cursors object for player movement
@@ -592,14 +592,6 @@ class ZeldaLike extends Phaser.Scene {
         
 
 
-        // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
-            // this.nomDuMonstre = this.physics.add.group();
-            // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
-            // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
-                //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
-                //this.monstre_create.anims.play('balise_animation_marche');
-                //this.nomDuMonstre.add(this.monstre_create);
-            //)};
 
         // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
           // this.nomDuMonstre = this.physics.add.group();
@@ -648,8 +640,8 @@ class ZeldaLike extends Phaser.Scene {
 
 
         // Create NPC sprite and enable physics
-        this.mob = this.physics.add.sprite(300, 450, 'mob');
-        this.mob.setCollideWorldBounds(true);
+        //this.mob = this.physics.add.sprite(300, 450, 'mob');
+        //this.mob.setCollideWorldBounds(true);
 
 
         // Create cursors object for player movement
@@ -1071,7 +1063,7 @@ class level2 extends Phaser.Scene {
         this.load.spritesheet('player', 'assets/player.png',
         { frameWidth: 36, frameHeight: 50 });
         this.load.image('npc', 'assets/littleSister.png');
-        //this.load.image('mob', 'assets/mob.png');
+        this.load.image('mob', 'assets/mobBlob.png');
 
     // TILED - preload du tileset utilisé par Tiled pour créer la map
         this.load.image('tileset2' , 'assets/tileset_donj_00.png');
@@ -1145,18 +1137,25 @@ create() {
     this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
     this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
     this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
+    this.attaque_sword_left = this.physics.add.sprite(0,0, 'sword_x_left');
+    this.attaque_sword_right = this.physics.add.sprite(0,0, 'sword_x_right');
+    this.attaque_sword_up = this.physics.add.sprite(0,0, 'sword_y_up');
+    this.attaque_sword_down = this.physics.add.sprite(0,0, 'sword_y_down');
+
 
     
 
 
     // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
-        // this.nomDuMonstre = this.physics.add.group();
-        // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
-        // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
-            //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
-            //this.monstre_create.anims.play('balise_animation_marche');
-            //this.nomDuMonstre.add(this.monstre_create);
-        //)};
+    this.mob = this.physics.add.group();
+
+    this.Mobs = this.map2.getObjectLayer('mobsDonjon1');
+    this.Mobs.objects.forEach(Mobs => {
+        this.Mobs_create = this.physics.add.sprite(Mobs.x + 16, Mobs.y + 16, 'mob');
+        //this.monstre_create.anims.play('balise_animation_marche');
+        this.mob.add(this.Mobs_create);
+    });
+    //this.mob.setVelocityY(-100);
 
     // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
       // this.nomDuMonstre = this.physics.add.group();
@@ -1192,11 +1191,6 @@ create() {
     //npc.setCollideWorldBounds(true);
 
 
-    // Create NPC sprite and enable physics
-    this.mob = this.physics.add.sprite(300, 450, 'mob');
-    this.mob.setCollideWorldBounds(true);
-
-
     // Create cursors object for player movement
     this.cursorsUp = this.input.keyboard.addKey('Z');
     this.cursorsLeft = this.input.keyboard.addKey('Q')
@@ -1208,7 +1202,7 @@ create() {
 
 
     // Create attack button
-    this.attackButton = this.input.keyboard.addKey('SPACE');
+     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
 
 
@@ -1226,17 +1220,21 @@ create() {
 
 
     // Set up collision between player and npc
-    this.physics.add.collider(this.player, this.mob);
+    //this.physics.add.collider(this.player, this.mob);
     this.physics.add.collider(this.player, this.npc);
     this.physics.add.collider(this.player, this.obstacleLayer)
+    this.physics.add.collider(this.attaque_sword_left, this.mob);
+    this.physics.add.collider(this.attaque_sword_right, this.mob);
+    this.physics.add.collider(this.attaque_sword_up, this.mob);
+    this.physics.add.collider(this.attaque_sword_down, this.mob);
+    this.physics.add.collider(this.mob, this.attaque_sword, this.kill_mob, null, this);
 
 
     // Set up overlap between player and npc for interaction
-    this.physics.add.overlap(this.player, this.mob, this.checkSpeak.bind(this));
+    this.physics.add.overlap(this.player, this.npc, this.checkSpeak.bind(this));
 
 
-    // Set up overlap between player and mob for attack
-    this.physics.add.overlap(this.player, this.mob, this.checkCollision.bind(this), this.showAttack);
+    
 
 
     // Detecter la collision entre le bord du monde et le perso pour load la nouvelle map
@@ -1301,26 +1299,93 @@ create() {
 //_____________________________________________________________________________________________________________
 
 update() {
-    // Player movement
-        if (this.cursorsLeft.isDown) {
-            this.player.setVelocityX(-260);
-            this.player.anims.play('left', true);
+    //Player moves
+    if (this.cursorsLeft.isDown ) {
+        this.player.setVelocityX(-260);
+        this.player.anims.play('left', true);
+        this.faceLeft = true;
+        this.faceRight = false;
+        this.faceUp = false;
+        this.faceDown = false;
+    }
+    else if (this.cursorsRight.isDown) {
+        this.player.setVelocityX(260);
+        this.player.anims.play('right', true);
+        this.faceLeft = false;
+        this.faceRight = true;
+        this.faceUp = false;
+        this.faceDown = false;
+    }
+    else if (this.cursorsUp.isDown) {
+        this.player.setVelocityY(-260);
+        this.player.anims.play('up', true);
+        this.faceLeft = false;
+        this.faceRight = false;
+        this.faceUp = true;
+        this.faceDown = false;
+
+    } else if (this.cursorsDown.isDown) {
+        this.player.setVelocityY(260);
+        this.player.anims.play('down', true);
+        this.faceLeft = false;
+        this.faceRight = false;
+        this.faceUp = false;
+        this.faceDown = true;
+    }
+    else {
+        this.player.setVelocity(0);
+        this.player.anims.play('idle', true);
+    }
+
+
+    // Player attack
+    if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
+        this.clean_sword();
+        
+
+
+        if (this.faceLeft == true) {
+            this.player.setVelocityX(0);
+            this.player.setVelocityY(0);
+            this.attaque_sword_left.x = (this.player.x - 32);
+            this.attaque_sword_left.y = (this.player.y);
+            this.time.delayedCall(300, () => {
+                this.attaque_sword_left.disableBody(true,true);
+            })
+            
         }
-        else if (this.cursorsRight.isDown) {
-            this.player.setVelocityX(260);
-            this.player.anims.play('right', true);
+        else if (this.faceRight == true) {
+            this.player.setVelocityX(0);
+            this.player.setVelocityY(0);
+            this.attaque_sword_right.x = (this.player.x + 32);
+            this.attaque_sword_right.y = (this.player.y);
+            this.time.delayedCall(300, () => {
+                this.attaque_sword_right.disableBody(true,true);
+            })
+            
         }
-        else if (this.cursorsUp.isDown) {
-            this.player.setVelocityY(-260);
-            this.player.anims.play('up', true);
-        } else if (this.cursorsDown.isDown) {
-            this.player.setVelocityY(260);
-            this.player.anims.play('down', true);
+        else if (this.faceUp == true) {
+            this.player.setVelocityX(0);
+            this.player.setVelocityY(0);
+            this.attaque_sword_up.x = (this.player.x);
+            this.attaque_sword_up.y = (this.player.y - 32);
+            this.time.delayedCall(300, () => {
+                this.attaque_sword_up.disableBody(true,true);
+            })
+          
+        } 
+        else if (this.faceDown == true) {
+            this.player.setVelocityX(0);
+            this.player.setVelocityY(0);
+            this.attaque_sword_down.x = (this.player.x);
+            this.attaque_sword_down.y = (this.player.y + 32);
+            this.time.delayedCall(300, () => {
+                this.attaque_sword_down.disableBody(true,true);
+            })
+            
         }
-        else {
-            this.player.setVelocity(0);
-            this.player.anims.play('idle', true);
-        }
+    }
+
 
 
   
@@ -1341,9 +1406,11 @@ update() {
     }
 
 
-    if (this.canAttack && this.attackButton.isDown) {
-        this.checkCollision();
-    }
+    this.physics.overlap(this.attaque_sword_left, this.mob, () => {
+        if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
+            this.attackSword()
+        }
+    });
 
     if (this.canSpeak && this.interactButton.isDown){
         this.checkSpeak();
@@ -1360,6 +1427,27 @@ update() {
 
 
     //FONCTIONS
+
+    destroy(){
+        this.mob.disableBody(true,true);
+    }
+    
+    kill_mob(mob) {
+        mob.destroy();
+    }
+
+    
+    clean_sword() {
+        this.attaque_sword_left.enableBody(true, true);
+        this.attaque_sword_right.enableBody(true, true);
+        this.attaque_sword_up.enableBody(true, true);
+        this.attaque_sword_down.enableBody(true, true);
+        this.attaque_sword_left.visible = true;
+        this.attaque_sword_right.visible = true;
+        this.attaque_sword_up.visible = true;
+        this.attaque_sword_down.visible = true;
+    }
+
     showDialogue(){
         // Show dialogue box and text
         
@@ -1391,18 +1479,8 @@ update() {
 
 
 
-    checkCollision(){
-        this.physics.overlap(this.player, this.mob, () => {
-            if (this.canAttack) {
-                this.dialogueText.setText(this.attackTxt);
-                this.mob.visible = false;
-                this.canAttack = false;
-            }
-        }, null, this);
-
-        this.physics.world.collide(this.player, this.mob, () => {
-            this.canAttack = true;
-        }, null, this);
+    attackSword(){
+                this.mob.destroy();
     }
 
 
@@ -1425,6 +1503,7 @@ update() {
             this.canSpeak = true;
         }, null, this);
     }
+    
 
 }
 
