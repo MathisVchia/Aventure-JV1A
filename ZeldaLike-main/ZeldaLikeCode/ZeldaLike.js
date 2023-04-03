@@ -320,6 +320,7 @@ class Inside extends Phaser.Scene {
 
     //UPDATE _____________________________________________________________________________________________________________
     update() {
+        console.log(this.player.x, this.player.y)
         // Player movement
         if (this.cursorsLeft.isDown) {
             this.player.setVelocityX(-260);
@@ -494,6 +495,7 @@ class ZeldaLike extends Phaser.Scene {
         this.canAttack = true;
         this.canSpeak = true;
         this.camera;
+        this.canTrade = true;
     }
 
     init(data){this.porteHaut=data.porteHaut, this.porteBas = data.porteBas, this.exitDonjon1 = data.exitDonjon1};
@@ -539,6 +541,8 @@ class ZeldaLike extends Phaser.Scene {
         this.faceRight = false;
         this.faceUp = false;
         this.faceDown = false;
+        this.controlOff = false;
+        this.tradeSentence1 = false;
 
 
 
@@ -560,6 +564,16 @@ class ZeldaLike extends Phaser.Scene {
         this.dialogue2 = [
             "Je t'attendais",
         ];
+        this.trade1 = [
+            "Bienvenu à la boutique !"
+        ];
+        this.trade2 = [
+            "En échange de 5 boutons, je veux bien te donner 10 cailloux !"
+        ];
+        this.nbBouton = [
+            5
+        ];
+
         this.randomIndex;
         this.dialogues;
         this.randomIndex;
@@ -656,6 +670,7 @@ class ZeldaLike extends Phaser.Scene {
 
         // Create attack button
         this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
 
 
@@ -670,6 +685,17 @@ class ZeldaLike extends Phaser.Scene {
         this.dialogueBox.fillRect(500, 750, 800, 100);
         this.dialogueText = this.add.text(550, 750, '', { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
         this.dialogueText.setWordWrapWidth(600);
+
+        // Create trade box and texte
+        this.tradeBox = this.add.graphics().setScrollFactor(0);
+        this.tradeBox.fillStyle(0x222222, 0.8);
+        this.tradeBox.fillRect(500, 750, 800, 100);
+        this.tradeText = this.add.text(550, 750, '', { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
+        this.tradeText.setWordWrapWidth(600);
+
+        
+        this.boutonText = this.add.text(200, 200, '', { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
+        this.boutonText.setWordWrapWidth(600);
 
 
         // Set up collision between player and npc
@@ -750,40 +776,49 @@ class ZeldaLike extends Phaser.Scene {
     //_____________________________________________________________________________________________________________
 
     update() {
+        console.log(this.player.x, this.player.y)
 
         //Player moves
         if (this.cursorsLeft.isDown ) {
-            this.player.setVelocityX(-260);
-            this.player.anims.play('left', true);
-            this.faceLeft = true;
-            this.faceRight = false;
-            this.faceUp = false;
-            this.faceDown = false;
+            if (this.controlOff == false){
+                this.player.setVelocityX(-160);
+                this.player.anims.play('left', true);
+                this.faceLeft = true;
+                this.faceRight = false;
+                this.faceUp = false;
+                this.faceDown = false;
+            }
         }
         else if (this.cursorsRight.isDown) {
-            this.player.setVelocityX(260);
-            this.player.anims.play('right', true);
-            this.faceLeft = false;
-            this.faceRight = true;
-            this.faceUp = false;
-            this.faceDown = false;
+            if (this.controlOff == false){
+                this.player.setVelocityX(160);
+                this.player.anims.play('right', true);
+                this.faceLeft = false;
+                this.faceRight = true;
+                this.faceUp = false;
+                this.faceDown = false;
+            }
         }
         else if (this.cursorsUp.isDown) {
-            this.player.setVelocityY(-260);
-            this.player.anims.play('up', true);
-            this.faceLeft = false;
-            this.faceRight = false;
-            this.faceUp = true;
-            this.faceDown = false;
-
+            if (this.controlOff == false){
+                this.player.setVelocityY(-160);
+                this.player.anims.play('up', true);
+                this.faceLeft = false;
+                this.faceRight = false;
+                this.faceUp = true;
+                this.faceDown = false;
+            }
+        
         } else if (this.cursorsDown.isDown) {
-            this.player.setVelocityY(260);
-            this.player.anims.play('down', true);
-            this.faceLeft = false;
-            this.faceRight = false;
-            this.faceUp = false;
-            this.faceDown = true;
+            if (this.controlOff == false){
+                this.player.setVelocityY(160);
+                this.player.anims.play('down', true);
+                this.faceLeft = false;
+                this.faceRight = false;
+                this.faceUp = false;
+                this.faceDown = true;
         }
+    }
         else {
             this.player.setVelocity(0);
             this.player.anims.play('idle', true);
@@ -868,26 +903,29 @@ class ZeldaLike extends Phaser.Scene {
         // pour rentrer a l'interieur par le bas
         if (this.player.x > 1631 && this.player.x < 1759 && this.player.y > 2432 && this.player.y < 2495){
             this.changedLevel3();
+        }
 
-
-        if (this.canAttack && this.attackButton.isDown) {
+/*
+        if (this.canAttack && this.attackButton.isDown){
             this.checkCollision();
         }
 
         if (this.canSpeak && this.interactButton.isDown){
             this.checkSpeak();
         }
+        */
+        if (this.player.x > 2425 && this.player.x < 2545 && this.player.y > 2060 && this.player.y < 2125 ){
+            console.log("skjdfsdfdfhjdf")
+                this.trade();
+                this.tradeSentence1 = true;
+            }
+}
 
+    
 
-        
-
-
-    }
-
-    }
     //_____________________________________________________________________________________________________________
 
-
+nbCailloux
     //FONCTIONS
 
     // fais disparaître la zone de frappe après le coup
@@ -1000,15 +1038,36 @@ class ZeldaLike extends Phaser.Scene {
 
         
     }
-    
 
+    nbBouton(){
+        this.boutonText.setText(this.nbBouton);
+    }
+
+    trade(){
+        this.controlOff = true;
+        if (this.tradeSentence1 ==  true){
+            this.tradeBox.visible = true;
+            this.tradeText.setText(this.trade1[0]);
+            if (Phaser.Input.Keyboard.JustDown(this.keyEnter)){
+                this.tradeText.setText(this.trade2[0]);
+                if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
+                    this.nbBouton -= 5;
+                    this.nbCailloux += 10;
+                    this.canTrade = true;
+                    this.tradeBox.visible = false;
+                    this.tradeText.setText('');
+                    this.controlOff = false;
+                };
+                if (Phaser.Input.Keyboard.JustDown(this.keyEnter)){
+                    this.tradeBox.visible = false;
+                    this.tradeText.setText('');
+                    this.controlOff = false;
+                };
+            };
+
+        };
+    }
 }
-
-
-
-
-
-
 
 
 
@@ -1408,7 +1467,10 @@ update() {
 
     this.physics.overlap(this.attaque_sword_left, this.mob, () => {
         if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
-            this.attackSword()
+            kill_mob(mob)
+            this.destroy()
+            this.kill_mob(mob)
+
         }
     });
 
@@ -1429,7 +1491,7 @@ update() {
     //FONCTIONS
 
     destroy(){
-        this.mob.disableBody(true,true);
+        this.mob.destroy();
     }
     
     kill_mob(mob) {
@@ -1476,12 +1538,6 @@ update() {
 
     }
 
-
-
-
-    attackSword(){
-                this.mob.destroy();
-    }
 
 
     checkSpeak(){
