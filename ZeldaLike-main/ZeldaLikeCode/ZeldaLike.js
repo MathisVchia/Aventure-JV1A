@@ -1043,7 +1043,9 @@ nbCailloux
         this.boutonText.setText(this.nbBouton);
     }
 
-    trade(){
+
+    // Tentative de trade de la monnaie
+    /*trade(){
         this.controlOff = true;
         if (this.tradeSentence1 ==  true){
             this.tradeBox.visible = true;
@@ -1066,8 +1068,7 @@ nbCailloux
             };
 
         };
-    }
-}
+    */}
 
 
 
@@ -1292,6 +1293,11 @@ create() {
     // Set up overlap between player and npc for interaction
     this.physics.add.overlap(this.player, this.npc, this.checkSpeak.bind(this));
 
+    this.physics.add.overlap(this.attaque_sword_left, this.mob, this.hitMonster, null, this);
+    this.physics.add.overlap(this.attaque_sword_right, this.mob, this.hitMonster, null, this);
+    this.physics.add.overlap(this.attaque_sword_up, this.mob, this.hitMonster, null, this);
+    this.physics.add.overlap(this.attaque_sword_down, this.mob, this.hitMonster, null, this);
+
 
     
 
@@ -1438,6 +1444,7 @@ update() {
             this.player.setVelocityY(0);
             this.attaque_sword_down.x = (this.player.x);
             this.attaque_sword_down.y = (this.player.y + 32);
+            if (this.attaque_sword_down)
             this.time.delayedCall(300, () => {
                 this.attaque_sword_down.disableBody(true,true);
             })
@@ -1465,14 +1472,7 @@ update() {
     }
 
 
-    this.physics.overlap(this.attaque_sword_left, this.mob, () => {
-        if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
-            kill_mob(mob)
-            this.destroy()
-            this.kill_mob(mob)
 
-        }
-    });
 
     if (this.canSpeak && this.interactButton.isDown){
         this.checkSpeak();
@@ -1490,14 +1490,11 @@ update() {
 
     //FONCTIONS
 
-    destroy(){
-        this.mob.destroy();
-    }
     
-    kill_mob(mob) {
-        mob.destroy();
+    hitMonster(attaque_sword, mob) {
+        mob.disableBody(true, true);
+        attaque_sword.disableBody(true, true);
     }
-
     
     clean_sword() {
         this.attaque_sword_left.enableBody(true, true);
