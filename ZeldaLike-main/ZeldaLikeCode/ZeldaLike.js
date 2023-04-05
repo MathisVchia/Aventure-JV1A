@@ -914,11 +914,11 @@ class ZeldaLike extends Phaser.Scene {
             this.checkSpeak();
         }
         */
-        if (this.player.x > 2425 && this.player.x < 2545 && this.player.y > 2060 && this.player.y < 2125 ){
-            console.log("skjdfsdfdfhjdf")
-                this.trade();
-                this.tradeSentence1 = true;
-            }
+      //  if (this.player.x > 2425 && this.player.x < 2545 && this.player.y > 2060 && this.player.y < 2125 ){
+           // console.log("skjdfsdfdfhjdf")
+              //  this.trade();
+               // this.tradeSentence1 = true;
+            //}
 }
 
     
@@ -1111,13 +1111,6 @@ class level2 extends Phaser.Scene {
 //_____________________________________________________________________________________________________________
     
 
-    preload() {
-        
-
-    
-        
-    
-    }
 
     preload() {
         this.load.spritesheet('player', 'assets/player.png',
@@ -1151,6 +1144,12 @@ create() {
     this.cursorsLeft;
     this.cursorsRight;
     this.cursorsDown;
+    this.pvs = 3;
+    this.x;
+    this.y;
+    this.loot;
+    this.piece;
+    
 
 
 
@@ -1193,7 +1192,6 @@ create() {
     this.murDonjon1.setCollisionByProperty({ estSolide: true }); 
     this.murDonjon2.setCollisionByProperty({ estSolide: true }); 
 
-    this.add.image(55,40,'fullLife').setScale(2,2).setScrollFactor(0);
     this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
     this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
     this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
@@ -1213,6 +1211,13 @@ create() {
     this.Mobs.objects.forEach(Mobs => {
         this.Mobs_create = this.physics.add.sprite(Mobs.x + 16, Mobs.y + 16, 'mob');
         //this.monstre_create.anims.play('balise_animation_marche');
+        this.tweens.add({
+            targets: this.Mobs_create,
+            y: Mobs.y - 116, // Aller à une position de 100 pixels plus haut
+            duration: 2000, // Pendant une durée de 1 seconde
+            yoyo: true, // Revenir à la position initiale après l'animation
+            repeat: -1 // Répéter en boucle
+        });
         this.mob.add(this.Mobs_create);
     });
     //this.mob.setVelocityY(-100);
@@ -1288,6 +1293,8 @@ create() {
     this.physics.add.collider(this.attaque_sword_up, this.mob);
     this.physics.add.collider(this.attaque_sword_down, this.mob);
     this.physics.add.collider(this.mob, this.attaque_sword, this.kill_mob, null, this);
+    this.physics.add.collider(this.player, this.mob, this.pertePvs, null, this);
+    this.physics.add.collider(this.player, this.loot);
 
 
     // Set up overlap between player and npc for interaction
@@ -1478,6 +1485,9 @@ update() {
         this.checkSpeak();
     }
 
+    if (this.pvs == 3){
+        this.fullVie = this.add.image(55, 40, "fullLife").setScrollFactor(0);
+    }
 
     
 
@@ -1490,12 +1500,47 @@ update() {
 
     //FONCTIONS
 
+    pertePvs(player){
+        player.pvs -= 1;
+        console.log ("La tu te fais tap")
+        player.setTint(0xff0000); // Changer la teinte du sprite en rouge
+        player.body.enable = false; // Désactiver la physique du joueur
+        setTimeout(() => {
+        player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
+        player.body.enable = true; // Réactiver la physique du joueur
+    }, 2000); 
+    }
+
     
     hitMonster(attaque_sword, mob) {
+        this.x = mob.x;
+        this.y = mob.y;
         mob.disableBody(true, true);
         attaque_sword.disableBody(true, true);
+        // Faire apparaitre un sprite à l'emplacement de la mort de l'ennemi
+        this.loot = this.add.sprite(this.x, this.y, 'piece');
+        // Gérer la collision entre le joueur et la pièce
+        this.physics.add.overlap(this.player, this.loot, () => {
+            console.log ("la touché la touché, la touché la touché, touchééééé le sprite de la moneyyyyy")
+            this.loot.destroy();
+      
+        // Incrémenter le compteur de pièces
+            this.pieceCount += 1;
+      
+        // Mettre à jour l'affichage du compteur
+            this.pieceCountText.setText(`Pièces : ${this.pieceCount}`);
+        });
+
     }
+      
+      
+      
+      
+      
+      
     
+
+
     clean_sword() {
         this.attaque_sword_left.enableBody(true, true);
         this.attaque_sword_right.enableBody(true, true);
