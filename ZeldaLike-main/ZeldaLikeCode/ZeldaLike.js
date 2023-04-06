@@ -85,7 +85,9 @@ class Inside extends Phaser.Scene {
     // TILED - preload du fichier json où se trouve la map créée sur Tiled
         this.load.tilemapTiledJSON('map1', 'maison.json');
 
-        this.load.image('fullLife', 'assets/FullLife.png');
+        this.load.image('fullLife', 'assets/fullLife.png');
+        this.load.image('midLife', 'assets/midLife.png');
+        this.load.image('lowLife', 'assets/lowLife.png');
         this.load.image('piece', 'assets/piece.png');
         this.load.image('poche', 'assets/poche.png');
     }
@@ -145,7 +147,8 @@ class Inside extends Phaser.Scene {
 
         this.decors.setCollisionByProperty({ estSolide: true });
         
-        this.add.image(55,40,'fullLife').setScale(2,2).setScrollFactor(0);
+        this.uiLife = this.add.sprite(55,40,'fullLife').setScale(2,2).setScrollFactor(0);
+        
         this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
         this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
         this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
@@ -1125,6 +1128,7 @@ class level2 extends Phaser.Scene {
         this.load.image('pot', 'assets/pot.png');
         this.load.image('epee', 'assets/woodenSword.png');
         this.load.image('clef', 'assets/clef.png');
+        this.load.image('boss', 'assets/boss1.png');
     // TILED - preload du tileset utilisé par Tiled pour créer la map
         this.load.image('tileset2' , 'assets/tileset_donj_00.png');
         
@@ -1132,7 +1136,9 @@ class level2 extends Phaser.Scene {
         this.load.tilemapTiledJSON('map2', 'donjon1.json');
         
 
-        this.load.image('fullLife', 'assets/FullLife.png');
+        this.load.image('fullLife', 'assets/fullLife.png');
+        this.load.image('midLife', 'assets/midLife.png');
+        this.load.image('lowLife', 'assets/lowLife.png');
         this.load.image('piece', 'assets/piece.png');
         this.load.image('poche', 'assets/poche.png');
         this.load.image('projectile', 'assets/projectiles.png');
@@ -1171,10 +1177,11 @@ create() {
     this.timeElapsed;
     this.health;
 
-    
 
 
-
+    let boss = {
+        health: 4
+      };
 
 
 
@@ -1222,9 +1229,14 @@ create() {
     this.murDonjon2.setCollisionByProperty({ estSolide: true });
     this.door.setCollisionByProperty({ estSolide: true }); 
 
+
+    // UI
     this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
     this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
     this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
+    this.uiLife = this.add.sprite(55, 40, "fullLife").setScrollFactor(0);
+
+
     this.attaque_sword_left = this.physics.add.sprite(0,0, 'sword_x_left');
     this.attaque_sword_right = this.physics.add.sprite(0,0, 'sword_x_right');
     this.attaque_sword_up = this.physics.add.sprite(0,0, 'sword_y_up');
@@ -1391,6 +1403,12 @@ create() {
     this.physics.add.overlap(this.attaque_sword_up, this.mob, this.hitMonster, null, this);
     this.physics.add.overlap(this.attaque_sword_down, this.mob, this.hitMonster, null, this);
 
+    // Attaque contre le boss
+    this.physics.add.overlap(this.attaque_sword_left, this.boss, this.hitBoss, null, this);
+    this.physics.add.overlap(this.attaque_sword_right, this.boss, this.hitBoss, null, this);
+    this.physics.add.overlap(this.attaque_sword_up, this.boss, this.hitBoss, null, this);
+    this.physics.add.overlap(this.attaque_sword_down, this.boss, this.hitBoss, null, this);
+
     // Coup epee contre pot pour detruire
     this.physics.add.overlap(this.attaque_sword_left, this.pot, this.hitPot, null, this);
     this.physics.add.overlap(this.attaque_sword_right, this.pot, this.hitPot, null, this);
@@ -1467,6 +1485,8 @@ create() {
 //_____________________________________________________________________________________________________________
 
 update(time, delta) {
+
+    console.log(this.player.y)
     //Player moves
     if (this.cursorsLeft.isDown ) {
         this.player.setVelocityX(-260);
@@ -1584,8 +1604,15 @@ update(time, delta) {
     }
 
     if (this.pvs == 3){
-        this.fullVie = this.add.image(55, 40, "fullLife").setScrollFactor(0);
+        this.uiLife.setTexture("fullLife")
     }
+    if (this.pvs == 2){
+        this.uiLife.setTexture("midLife")
+    }
+    if (this.pvs == 1){
+        this.uiLife.setTexture("lowLife")
+    }
+
 
 
     // Définir un délai minimum entre les mouvements du boss (en millisecondes)
@@ -1594,24 +1621,24 @@ update(time, delta) {
 
      // Mouvements aléatoires du boss
      
+     /*
         const now = this.time.now;
     if (!this.lastMoveTime || now - this.lastMoveTime > minMoveDelay) {
     const velocity = Phaser.Math.RandomXY(new Phaser.Math.Vector2(), this.bossSpeed);
     this.boss.setVelocity(velocity.x, velocity.y);
     this.lastMoveTime = now;
+
     }
+    */
+    if (this.player.y >= 1200)
+        this.physics.moveToObject(this.boss, this.player, 50);
+
      // Attaques régulières du boss
      if (time > this.bossAttackTimer + this.bossAttackInterval) {
          this.bossAttackTimer = time;
          this.fireProjectile();
      }
-
-     // Vérifier si le joueur a frappé le boss
-     if (this.bossHits >= this.boss.health) {
-         this.boss.disableBody(true,true);
-     }
-
-    
+ 
 
     
 
@@ -1637,18 +1664,30 @@ update(time, delta) {
     }
     
 
-    hitPlayer(player, projectile) {
+    hitPlayer(player, projectile, pvs) {
         // Retirer un point de vie au joueur et détruire le projectile
-        player.health--;
+        pvs -= 1;
+        console.log ("Tu perds de la vie")
+        player.setTint(0xff0000); // Changer la teinte du sprite en rouge
+        player.body.enable = false; // Désactiver la physique du joueur
+        setTimeout(() => {
+            player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
+            player.body.enable = true; // Réactiver la physique du joueur
+        }, 1000); 
         projectile.disableBody(true,true);
     }
 
 
     hitBoss(player, boss) {
         // Ajouter un coup au compteur et retirer un point de vie au boss
-        this.bossHits++;
         boss.health--;
-    }
+        boss.setTint(0xff0000);
+        console.log(boss.health)
+        if (boss.health === 0) {
+            boss.disableBody(true, true);
+          }
+        }
+    
 
 
 
@@ -1667,8 +1706,8 @@ update(time, delta) {
     }
 
     pertePvs(player){
-        player.pvs -= 1;
-        console.log ("La tu te fais tap")
+        this.pvs -= 1;
+        console.log (this.pvs)
         player.setTint(0xff0000); // Changer la teinte du sprite en rouge
         player.body.enable = false; // Désactiver la physique du joueur
         setTimeout(() => {
