@@ -594,6 +594,40 @@ class ZeldaLike extends Phaser.Scene {
                 //this.nomDuMonstre.add(this.monstre_create);
             //)};
 
+        // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
+        this.mobU = this.physics.add.group();
+
+        this.mobUp = this.map.getObjectLayer('mobUp');
+        this.mobUp.objects.forEach(mobUp => {
+            this.mobUp_create = this.physics.add.sprite(mobUp.x + 16, mobUp.y + 16, 'mob');
+            //this.monstre_create.anims.play('balise_animation_marche');
+            this.tweens.add({
+                targets: this.mobUp_create,
+                y: mobUp.y - 86, // Aller à une position de 100 pixels plus haut
+                duration: 3000, // Pendant une durée de 1 seconde
+                yoyo: true, // Revenir à la position initiale après l'animation
+                repeat: -1 // Répéter en boucle
+            });
+            this.mobU.add(this.mobUp_create);
+        });
+
+
+        this.mobR = this.physics.add.group();
+
+        this.mobRight = this.map.getObjectLayer('mobRight');
+        this.mobRight.objects.forEach(mobRight => {
+            this.mobRight_create = this.physics.add.sprite(mobRight.x + 16, mobRight.y + 16, 'mob');
+            //this.monstre_create.anims.play('balise_animation_marche');
+            this.tweens.add({
+                targets: this.mobRight_create,
+                x: mobRight.x +100, // Aller à une position de 100 pixels plus haut
+                duration: 3000, // Pendant une durée de 1 seconde
+                yoyo: true, // Revenir à la position initiale après l'animation
+                repeat: -1 // Répéter en boucle
+            });
+            this.mobR.add(this.mobRight_create);
+        });
+
 
         
 
@@ -679,11 +713,30 @@ class ZeldaLike extends Phaser.Scene {
         // Set up collision between player and npc
         this.physics.add.collider(this.player, this.mob);
         this.physics.add.collider(this.player, this.npc);
-        this.physics.add.collider(this.player, this.obstacleLayer)
+        this.physics.add.collider(this.player, this.obstacleLayer);
+
+        this.physics.add.collider(this.mobU, this.npc);
+        this.physics.add.collider(this.mobU, this.obstacleLayer);
+        
+        this.physics.add.collider(this.mobR, this.npc);
+        this.physics.add.collider(this.mobR, this.obstacleLayer);
+
+        this.physics.add.collider(this.player, this.mobU, this.pertePvs, null, this);
+        this.physics.add.collider(this.player, this.mobR, this.pertePvs, null, this);
 
 
         // Set up overlap between player and npc for interaction
         this.physics.add.overlap(this.player, this.mob, this.checkSpeak.bind(this));
+
+        this.physics.add.overlap(this.attaque_sword_left, this.mobU, this.hitMonsterU, null, this);
+        this.physics.add.overlap(this.attaque_sword_right, this.mobU, this.hitMonsterU, null, this);
+        this.physics.add.overlap(this.attaque_sword_up, this.mobU, this.hitMonsterU, null, this);
+        this.physics.add.overlap(this.attaque_sword_down, this.mobU, this.hitMonsterU, null, this);
+
+        this.physics.add.overlap(this.attaque_sword_left, this.mobR, this.hitMonsterR, null, this);
+        this.physics.add.overlap(this.attaque_sword_right, this.mobR, this.hitMonsterR, null, this);
+        this.physics.add.overlap(this.attaque_sword_up, this.mobR, this.hitMonsterR, null, this);
+        this.physics.add.overlap(this.attaque_sword_down, this.mobR, this.hitMonsterR, null, this);
 
 
         // Set up overlap between player and mob for attack
@@ -905,8 +958,63 @@ class ZeldaLike extends Phaser.Scene {
 
     //_____________________________________________________________________________________________________________
 
-nbCailloux
+
     //FONCTIONS
+
+    pertePvs(player){
+        this.pvs -= 1;
+        console.log (this.pvs)
+        player.setTint(0xff0000); // Changer la teinte du sprite en rouge
+        player.body.enable = false; // Désactiver la physique du joueur
+        setTimeout(() => {
+        player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
+        player.body.enable = true; // Réactiver la physique du joueur
+    }, 2000); 
+    }
+
+    hitMonsterU(attaque_sword, mobU) {
+        if (attaque_sword == true);
+            this.x = mobU.x;
+            this.y = mobU.y;
+            mobU.disableBody(true, true);
+            attaque_sword.disableBody(true, true);
+            // Faire apparaitre un sprite à l'emplacement de la mort de l'ennemi
+            this.loot = this.physics.add.sprite(this.x, this.y, 'piece');
+            // Gérer la collision entre le joueur et la pièce
+            this.physics.add.overlap(this.player, this.loot, () => {
+                console.log ("la touché la touché, la touché la touché")
+                    
+            // Incrémenter le compteur de pièces
+                this.pieceCount += 1;
+                this.pieceCountText.setText(this.pieceCount);
+                this.loot.destroy();
+        
+        
+            });
+
+    }
+
+    hitMonsterR(attaque_sword, mobR) {
+        if (attaque_sword == true);
+            this.x = mobR.x;
+            this.y = mobR.y;
+            mobR.disableBody(true, true);
+            attaque_sword.disableBody(true, true);
+            // Faire apparaitre un sprite à l'emplacement de la mort de l'ennemi
+            this.loot = this.physics.add.sprite(this.x, this.y, 'piece');
+            // Gérer la collision entre le joueur et la pièce
+            this.physics.add.overlap(this.player, this.loot, () => {
+                console.log ("la touché la touché, la touché la touché")
+                    
+            // Incrémenter le compteur de pièces
+                this.pieceCount += 1;
+                this.pieceCountText.setText(this.pieceCount);
+                this.loot.destroy();
+        
+        
+            });
+
+    }
 
     // fais disparaître la zone de frappe après le coup
     clean_sword() {
