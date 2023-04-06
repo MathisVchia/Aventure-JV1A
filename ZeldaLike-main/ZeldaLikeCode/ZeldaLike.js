@@ -1570,7 +1570,7 @@ update(time, delta) {
 
 
 
-    if (this.canSpeak && this.interactButton.isDown){
+    if (this.interactButton.isDown){
         this.checkSpeak();
     }
 
@@ -1656,6 +1656,7 @@ update(time, delta) {
         console.log(boss.health)
         if (boss.health === 0) {
             boss.disableBody(true, true);
+            this.bossBattu = true;
           }
         }
     
@@ -1774,30 +1775,40 @@ update(time, delta) {
 
 
 
-    checkSpeak(){
-            this.canSpeak = false;
-            this.dialogueBox.visible = true;
-            this.dialogueText.setText(this.dialogue1[0]);
-            this.time.delayedCall(3000, function () {
-                this.canSpeak = true;
-                this.dialogueText.setText(this.dialogue2[0]);
-                this.time.delayedCall(5000, function () {
-                    this.canSpeak = true;
-                    this.dialogueText.setText(this.dialogue2[0]);
-                    this.dialogueBox.visible = false;
-                    this.dialogueText.setText('');
-                }, [], this);
-            }, [], this);
-
-        this.physics.world.collide(this.player, this.mob, () => {
-            this.canSpeak = true;
-        }, null, this);
-    }
+    checkSpeak() {
+        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.npc.x, this.npc.y);
+        if (distance < 50) { // la distance de déclenchement du dialogue
+            if (!this.dialogueBox.visible) { // affiche le dialogue si la boîte de dialogue n'est pas déjà visible
+                this.dialogueBox.visible = true;
+                if (this.bossBattu == false){
+                    this.dialogueText.setText(this.dialogue1[0]);
+                    this.time.delayedCall(3000, function () {
+                        this.dialogueText.setText(this.dialogue2[0]);
+                        this.time.delayedCall(3000, function () {
+                            this.dialogueBox.visible = false;
+                            this.dialogueText.setText('');
+                        }, [], this);
+                    }, [], this);
+                };
+                if (this.bossBattu == true){
+                    this.dialogueText.setText(this.dialogue3[0]);
+                    this.time.delayedCall(8000, function () {
+                        this.dialogueBox.visible = false;
+                        this.dialogueText.setText('');
+                    }, [], this);
+                };
+            } else {
+                this.dialogueBox.visible = false;
+                this.dialogueText.setText('');
+            }
     
 
-}
+        }
+    
 
-        
+    }
+
+}       
 
 
 
