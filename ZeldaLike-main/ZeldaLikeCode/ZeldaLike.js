@@ -122,10 +122,10 @@ class Inside extends Phaser.Scene {
 
         //var dialogue
         this.dialogue1 = [
-            "Ah tu es enfin réveillé ! Je t'attendais !",
+            "Bon, vu que maman et papa sont parti pour ton anniversaire, je t'ai préparé un petit truc !",
         ];
         this.dialogue2 = [
-            "Maintenant que papa et maman sont sorti, tu vas jouer à mon petit jeu, j'ai créé pour toi un donjon dans la cave de la maison, à toi de t'y rendre !",
+            "Si tu veux jouer avec moi, il faut aller au sous-sol ! Apparemment, un terrible méchant menace de tout casser !",
         ];
         this.randomIndex;
         this.dialogues;
@@ -245,15 +245,11 @@ class Inside extends Phaser.Scene {
         // Set up collision between player and npc
         this.physics.add.collider(this.player, this.mob);
         this.physics.add.collider(this.player, this.npc);
-        this.physics.add.collider(this.player, this.decors)
+        this.physics.add.collider(this.player, this.decors);
 
 
         // Set up overlap between player and npc for interaction
         this.physics.add.overlap(this.player, this.npc, this.checkSpeak.bind(this));
-
-
-        // Set up overlap between player and mob for attack
-        this.physics.add.overlap(this.player, this.mob, this.checkCollision.bind(this), this.showAttack);
 
 
         // Detecter la collision entre le bord du monde et le perso pour load la nouvelle map
@@ -373,11 +369,8 @@ class Inside extends Phaser.Scene {
         //if (this.player.y < 126 && this.player.x > 735 && this.player.x < 800){
             //this.changedLevel();
         //}
-        //if (this.canAttack && this.attackButton.isDown) {
-            //this.checkCollision();
-        //}
 
-        if (this.canSpeak && this.interactButton.isDown){
+        if (this.interactButton.isDown){
             this.checkSpeak();
         }
 
@@ -419,51 +412,31 @@ class Inside extends Phaser.Scene {
     }
     
 
-    
-
-    
-
-    checkCollision() {
-        this.physics.overlap(this.player, this.mob, () => {
-            if (this.canAttack) {
-                this.dialogueText.setText(this.attackTxt);
-                this.mob.visible = false;
-                this.canAttack = false;
-            }
-        }, null, this);
-
-        this.physics.world.collide(this.player, this.mob, () => {
-            this.canAttack = true;
-        }, null, this);
-    }
 
 
     checkSpeak() {
-            this.canSpeak = false;
-            this.dialogueBox.visible = true;
-            this.dialogueText.setText(this.dialogue1[0]);
-            this.time.delayedCall(3000, function () {
-                this.canSpeak = true;
-                this.dialogueText.setText(this.dialogue2[0]);
-                this.time.delayedCall(8000, function () {
-                    this.canSpeak = true;
+        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.npc.x, this.npc.y);
+        if (distance < 50) { // la distance de déclenchement du dialogue
+            if (!this.dialogueBox.visible) { // affiche le dialogue si la boîte de dialogue n'est pas déjà visible
+                this.dialogueBox.visible = true;
+                this.dialogueText.setText(this.dialogue1[0]);
+                this.time.delayedCall(3000, function () {
                     this.dialogueText.setText(this.dialogue2[0]);
-                    this.dialogueBox.visible = false;
-                    this.dialogueText.setText('');
+                    this.time.delayedCall(8000, function () {
+                        this.dialogueBox.visible = false;
+                        this.dialogueText.setText('');
+                    }, [], this);
                 }, [], this);
-            }, [], this);
-
-        this.physics.world.collide(this.player, this.npc, () => {
-            this.canSpeak = true;
-        }, null, this);
-
-        
-    }
+            }
+        } else {
+            this.dialogueBox.visible = false;
+            this.dialogueText.setText('');
+        }
     
 
+    }
+
 }
-
-
 
 
 
@@ -1176,12 +1149,7 @@ create() {
     this.bossAttackTimer;
     this.timeElapsed;
     this.health;
-
-
-
-    let boss = {
-        health: 4
-      };
+    this.bossBattu = false;
 
 
 
@@ -1201,11 +1169,14 @@ create() {
 
     //var dialogue
     this.dialogue1 = [
-        "Ah tu es enfin là!",
+        "Bienvenu... dans le donjon de la mort ! J'ai piqué des cartons à papa et maman pour te faire des épreuves, j'espère que ça te plaira !",
     ];
     this.dialogue2 = [
-        "Je t'attendais",
+        "Reviens une fois que tu as battu le terrible méchant du sous-sol... euh du donjon !",
     ];
+    this.dialogue3 = [
+        "Tu as battu le méchant ? Trop bien ! Maintenant, il faut que tu ailles vite sauver les pauvres habitants de Serreland ! Vite !"
+    ]
     this.randomIndex;
     this.dialogues;
     this.randomIndex;
