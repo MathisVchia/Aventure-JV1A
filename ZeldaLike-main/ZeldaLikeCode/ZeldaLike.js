@@ -1588,12 +1588,18 @@ update(time, delta) {
     }
 
 
-     // Mouvements aléatoires du boss
-     const direction = new Phaser.Math.Vector2(Math.random() * 2 - 1, Math.random() * 2 - 1);
-     direction.normalize();
-     const velocity = direction.scale(this.bossSpeed * delta / 1000);
-     this.boss.setVelocity(velocity.x, velocity.y);
+    // Définir un délai minimum entre les mouvements du boss (en millisecondes)
+    const minMoveDelay = 6000;
 
+
+     // Mouvements aléatoires du boss
+     
+        const now = this.time.now;
+    if (!this.lastMoveTime || now - this.lastMoveTime > minMoveDelay) {
+    const velocity = Phaser.Math.RandomXY(new Phaser.Math.Vector2(), this.bossSpeed);
+    this.boss.setVelocity(velocity.x, velocity.y);
+    this.lastMoveTime = now;
+    }
      // Attaques régulières du boss
      if (time > this.bossAttackTimer + this.bossAttackInterval) {
          this.bossAttackTimer = time;
