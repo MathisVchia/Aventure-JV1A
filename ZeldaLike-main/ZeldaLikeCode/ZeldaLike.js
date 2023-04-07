@@ -1678,7 +1678,7 @@ update(time, delta) {
 
 
 
-    if (this.interactButton.isDown){
+    if (Phaser.Input.Keyboard.JustDown(this.interactButton)){
         this.checkSpeak();
     }
 
