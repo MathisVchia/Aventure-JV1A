@@ -637,7 +637,7 @@ class ZeldaLike extends Phaser.Scene {
         console.log(this.porteHaut);
         if (this.porteHaut == true){
             console.log("ChangeLevelSimple");
-            this.player = this.physics.add.sprite(1918, 1333, 'player');
+            this.player = this.physics.add.sprite(1918, 1300, 'player');
             this.player.setCollideWorldBounds(true);
             this.changeLevel = false;
         }
@@ -924,7 +924,7 @@ class ZeldaLike extends Phaser.Scene {
         */
 
         // pour rentrer a l'interieur par le haut
-        if (this.player.x > 1888 && this.player.x < 1951 && this.player.y > 1344 && this.player.y < 1375){
+        if (this.player.x > 1888 && this.player.x < 1951 && this.player.y > 1305 && this.player.y < 1375){
             this.changedLevel1();
         }
 
