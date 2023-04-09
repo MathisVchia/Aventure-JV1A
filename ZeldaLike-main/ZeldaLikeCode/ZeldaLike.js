@@ -13,6 +13,7 @@ class Menu extends Phaser.Scene {
     }
 
     create(){
+
         // ajouter l'image de fond
         this.add.image(0, 0, 'MenuFond').setOrigin(0, 0);
 
@@ -41,19 +42,13 @@ class Menu extends Phaser.Scene {
     }
 }
 
-
-
-
-
-
-
+//______________________________________________________________________________________________________________________________________________________________________________________________________
+//______________________________________________________________________________________________________________________________________________________________________________________________________
 
 // SCENE INTERIEUR
 
-
-
-
-
+//______________________________________________________________________________________________________________________________________________________________________________________________________
+//______________________________________________________________________________________________________________________________________________________________________________________________________
 
 class Inside extends Phaser.Scene {
 
@@ -70,7 +65,7 @@ class Inside extends Phaser.Scene {
 
     init(data){this.startSpawn = data.startSpawn, this.porteEntree=data.porteEntree, this.porteEntreeHaut = data.porteEntreeHaut};
 
-    // PRELOAD ________________________________________________________________________________________
+    // PRELOAD______________________________________________________________________________________________________________________________________________________________________________________________________
 
     preload() {
         this.load.spritesheet('player', 'assets/player.png',
@@ -94,7 +89,7 @@ class Inside extends Phaser.Scene {
 
 
 
-    //  CREATE ________________________________________________________________________________________
+    //  CREATE ______________________________________________________________________________________________________________________________________________________________________________________________________
     create() {
 
 
@@ -105,19 +100,7 @@ class Inside extends Phaser.Scene {
         this.cursorsRight;
         this.cursorsDown;
         this.camera;
-
-
-
-
-        //var mob;
-        //this.mob;
-
-        //var texte
-        //this.attackTxt = [
-          //  "Tu attaques !"
-        //];
-       // this.attack = this.attackTxt[this.randomIndex];
-       // this.visible;
+        this.health;
 
 
         //var dialogue
@@ -165,18 +148,6 @@ class Inside extends Phaser.Scene {
                 //this.nomDuMonstre.add(this.monstre_create);
             //)};
 
-        // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
-          // this.nomDuMonstre = this.physics.add.group();
-          // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
-          // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
-                //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
-                //this.monstre_create.anims.play('balise_animation_marche');
-                //this.nomDuMonstre.add(this.monstre_create);
-            //)};
-
-
-        
-// BUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
         
         // Create player sprite and enable physics
 
@@ -202,17 +173,9 @@ class Inside extends Phaser.Scene {
             this.porteEntreeHaut = false;
         }
         
-
-
         // Create NPC sprite and enable physics
         this.npc = this.physics.add.staticSprite(700, 450, 'npc');
         //npc.setCollideWorldBounds(true);
-
-
-        // Create NPC sprite and enable physics
-        //this.mob = this.physics.add.sprite(300, 450, 'mob');
-        //this.mob.setCollideWorldBounds(true);
-
 
         // Create cursors object for player movement
         this.cursorsUp = this.input.keyboard.addKey('Z');
@@ -223,24 +186,12 @@ class Inside extends Phaser.Scene {
         // Create interact button
         this.interactButton = this.input.keyboard.addKey('E');
 
-
-        // Create attack button
-        //this.attackButton = this.input.keyboard.addKey('SPACE');
-
-
-
-
-
-
-
-
         // Create dialogue box and text
         this.dialogueBox = this.add.graphics().setScrollFactor(0);
         this.dialogueBox.fillStyle(0x222222, 0.8);
         this.dialogueBox.fillRect(500, 750, 800, 100);
         this.dialogueText = this.add.text(550, 750, '', { font: '24px Arial', fill: '#ffffff' }).setScrollFactor(0);
         this.dialogueText.setWordWrapWidth(600);
-
 
         // Set up collision between player and npc
         this.physics.add.collider(this.player, this.mob);
@@ -261,14 +212,10 @@ class Inside extends Phaser.Scene {
           });
 
 
-
-
           this.camera = this.cameras.main.setSize(1920,1080);
             this.camera.startFollow(this.player);
             this.camera.setDeadzone(50,50);
             this.camera.setBounds(0,0,3200,3200);
-
-
 
 
         this.anims.create({
@@ -306,18 +253,11 @@ class Inside extends Phaser.Scene {
             repeat: -1
         });
 
-        
-        
-
-
+    
 
     }
 
-
-
-
-
-    //UPDATE _____________________________________________________________________________________________________________
+   //UPDATE______________________________________________________________________________________________________________________________________________________________________________________________________
     update() {
         console.log(this.player.x, this.player.y)
         // Player movement
@@ -342,18 +282,6 @@ class Inside extends Phaser.Scene {
             this.player.anims.play('idle', true);
         }
 
-
-
-        //Pour l'instant appuyer sur E fait apparaitre une phrase et lacher le bouton fait disparaitre la phrase. A CHANGER pour ne pas avoir a maintenir
-        /*if (this.interactButton.isDown) {
-            
-        }
-        else{
-            this.noneDialogue();
-        }
-        
-*/
-
 // Creation de porte Y = ligne horizontale a dépasser et les deux X deux limites pour zoner un carrer dans lequel entrer
         if (this.player.y < 126 && this.player.x > 735 && this.player.x < 800){
             this.changedLevel();
@@ -363,9 +291,6 @@ class Inside extends Phaser.Scene {
             this.changedLevelFront();
         }
 
-
-
-
         //if (this.player.y < 126 && this.player.x > 735 && this.player.x < 800){
             //this.changedLevel();
         //}
@@ -374,10 +299,22 @@ class Inside extends Phaser.Scene {
             this.checkSpeak();
         }
 
-
     }
 
     //FONCTIONS
+
+
+    pertePvs(player){
+        this.pvs -= 1;
+        console.log (this.pvs)
+        player.setTint(0xff0000); // Changer la teinte du sprite en rouge
+        player.body.enable = false; // Désactiver la physique du joueur
+        this.registry.set("playerHealth", this.pvs);
+        setTimeout(() => {
+            player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
+            player.body.enable = true; // Réactiver la physique du joueur
+        }, 2000); 
+    }
 
 
 
@@ -440,24 +377,16 @@ class Inside extends Phaser.Scene {
 
 
 
-
-//_____________________________________________________________________________________________________________
-//_____________________________________________________________________________________________________________
+//______________________________________________________________________________________________________________________________________________________________________________________________________
+//______________________________________________________________________________________________________________________________________________________________________________________________________
 
 
 
 // SCENE DEHORS
 
 
-//_____________________________________________________________________________________________________________
-//_____________________________________________________________________________________________________________
-
-
-
-
-
-
-
+//______________________________________________________________________________________________________________________________________________________________________________________________________
+//______________________________________________________________________________________________________________________________________________________________________________________________________
 
 
 
@@ -476,7 +405,7 @@ class ZeldaLike extends Phaser.Scene {
 
     init(data){this.porteHaut=data.porteHaut, this.porteBas = data.porteBas, this.exitDonjon1 = data.exitDonjon1};
     
-    //_____________________________________________________________________________________________________________
+//______________________________________________________________________________________________________________________________________________________________________________________________________
 
     preload() {
         this.load.spritesheet('player', 'assets/player.png',
@@ -484,6 +413,7 @@ class ZeldaLike extends Phaser.Scene {
         this.load.image('npc', 'assets/littleSister.png');
         this.load.image('mob', 'assets/mobBlob.png');
         this.load.image('fond 1', 'assets/fond 1.png');
+        this.load.image('pot', 'assets/pot.png');
         this.load.image('sword_x_left', 'assets/sword_x_left.png');
         this.load.image('sword_x_right', 'assets/sword_x_right.png');
         this.load.image('sword_y_up', 'assets/sword_y_up.png');
@@ -499,10 +429,14 @@ class ZeldaLike extends Phaser.Scene {
         this.load.image('fullLife', 'assets/FullLife.png');
         this.load.image('piece', 'assets/piece.png');
         this.load.image('poche', 'assets/poche.png');
+        this.load.image('fullLife', 'assets/fullLife.png');
+        this.load.image('midLife', 'assets/midLife.png');
+        this.load.image('lowLife', 'assets/lowLife.png');
+        
     }
 
 
-    //_____________________________________________________________________________________________________________
+//______________________________________________________________________________________________________________________________________________________________________________________________________
 
     create() {
 
@@ -520,7 +454,7 @@ class ZeldaLike extends Phaser.Scene {
         this.controlOff = false;
         this.tradeSentence1 = false;
         this.health;
-        this.pvs;
+        this.pvs = 3;
 
 
 
@@ -571,18 +505,14 @@ class ZeldaLike extends Phaser.Scene {
 
         this.obstacleLayer.setCollisionByProperty({ estSolide: true }); 
 
-        this.add.image(55,40,'fullLife').setScale(2,2).setScrollFactor(0);
         this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
         this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
         this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
+        this.uiLife = this.add.sprite(55, 40, "fullLife").setScrollFactor(0);
         this.attaque_sword_left = this.physics.add.sprite(0,0, 'sword_x_left');
         this.attaque_sword_right = this.physics.add.sprite(0,0, 'sword_x_right');
         this.attaque_sword_up = this.physics.add.sprite(0,0, 'sword_y_up');
         this.attaque_sword_down = this.physics.add.sprite(0,0, 'sword_y_down');
-
-
-        
-
 
 
         // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
@@ -593,6 +523,7 @@ class ZeldaLike extends Phaser.Scene {
                 //this.monstre_create.anims.play('balise_animation_marche');
                 //this.nomDuMonstre.add(this.monstre_create);
             //)};
+
 
         // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
         this.mobU = this.physics.add.group();
@@ -654,11 +585,7 @@ class ZeldaLike extends Phaser.Scene {
             this.player.setCollideWorldBounds(true);
             this.changeLevel = false;
         }
-
-
-
-
-        
+    
 
         // Create NPC sprite and enable physics
         this.npc = this.physics.add.staticSprite(700, 450, 'npc');
@@ -683,12 +610,6 @@ class ZeldaLike extends Phaser.Scene {
         // Create attack button
         this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
-
-
-
-
-
 
 
         // Create dialogue box and text
@@ -802,9 +723,7 @@ class ZeldaLike extends Phaser.Scene {
     }
 
 
-
-
-    //_____________________________________________________________________________________________________________
+    //___________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
     update() {
         console.log(this.player.x, this.player.y)
@@ -907,21 +826,15 @@ class ZeldaLike extends Phaser.Scene {
         }
 
 
-
-
-        //if (this.player.y <= 50) {
-            //this.scenelevel2();
-        //};
-
-        //Pour l'instant appuyer sur E fait apparaitre une phrase et lacher le bouton fait disparaitre la phrase. A CHANGER pour ne pas avoir a maintenir
-        /*if (this.interactButton.isDown) {
-            
+        if (this.pvs == 3){
+            this.uiLife.setTexture("fullLife")
         }
-        else{
-            this.noneDialogue();
+        if (this.pvs == 2){
+            this.uiLife.setTexture("midLife")
         }
-        
-        */
+        if (this.pvs == 1){
+            this.uiLife.setTexture("lowLife")
+        }
 
         // pour rentrer a l'interieur par le haut
         if (this.player.x > 1888 && this.player.x < 1951 && this.player.y > 1305 && this.player.y < 1375){
@@ -938,15 +851,7 @@ class ZeldaLike extends Phaser.Scene {
             this.changedLevel3();
         }
 
-/*
-        if (this.canAttack && this.attackButton.isDown){
-            this.checkCollision();
-        }
-
-        if (this.canSpeak && this.interactButton.isDown){
-            this.checkSpeak();
-        }
-        */
+    // TENTATIVE DE TRADE
       //  if (this.player.x > 2425 && this.player.x < 2545 && this.player.y > 2060 && this.player.y < 2125 ){
            // console.log("skjdfsdfdfhjdf")
               //  this.trade();
@@ -955,8 +860,7 @@ class ZeldaLike extends Phaser.Scene {
 }
 
     
-
-    //_____________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________________________________________________________________
 
 
     //FONCTIONS
@@ -966,10 +870,11 @@ class ZeldaLike extends Phaser.Scene {
         console.log (this.pvs)
         player.setTint(0xff0000); // Changer la teinte du sprite en rouge
         player.body.enable = false; // Désactiver la physique du joueur
+        this.registry.set("playerHealth", this.pvs);
         setTimeout(() => {
-        player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
-        player.body.enable = true; // Réactiver la physique du joueur
-    }, 2000); 
+            player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
+            player.body.enable = true; // Réactiver la physique du joueur
+     }, 2000); 
     }
 
     hitMonsterU(attaque_sword, mobU) {
@@ -1156,12 +1061,13 @@ class ZeldaLike extends Phaser.Scene {
             };
 
         };
-    */}
+    */
+}
 
 
 
-//_____________________________________________________________________________________________________________
-//_____________________________________________________________________________________________________________
+//_____________________________________________________________________________________________________________________________________________________________________________________________
+//_____________________________________________________________________________________________________________________________________________________________________________________________
 
 
 
@@ -1169,13 +1075,8 @@ class ZeldaLike extends Phaser.Scene {
 
 
 
-//_____________________________________________________________________________________________________________
-//_____________________________________________________________________________________________________________
-
-
-
-
-
+//_____________________________________________________________________________________________________________________________________________________________________________________________
+//_____________________________________________________________________________________________________________________________________________________________________________________________
 
 
 
@@ -1223,7 +1124,6 @@ class level2 extends Phaser.Scene {
         this.load.image('piece', 'assets/piece.png');
         this.load.image('poche', 'assets/poche.png');
         this.load.image('projectile', 'assets/projectiles.png');
-        //this.load.sprite('boss', 'assets/boss1.png');
     }
 
 
@@ -1240,7 +1140,7 @@ create() {
     this.cursorsLeft;
     this.cursorsRight;
     this.cursorsDown;
-    this.pvs = 3;
+    this.pvs = this.registry.get("playerHealth");
     this.x;
     this.y;
     this.loot;
@@ -1346,17 +1246,6 @@ create() {
     });
     //this.mob.setVelocityY(-100);
 
-    // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
-      // this.nomDuMonstre = this.physics.add.group();
-      // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
-      // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
-            //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
-            //this.monstre_create.anims.play('balise_animation_marche');
-            //this.nomDuMonstre.add(this.monstre_create);
-        //)};
-
-
-
     
     // TILED - load calque objet utilisés dans Tiled (Pour les pots cassables)
     this.pot = this.physics.add.group();
@@ -1438,9 +1327,6 @@ create() {
     console.log(this.player);
 
 
-
-
-
     // Create dialogue box and text
     this.dialogueBox = this.add.graphics().setScrollFactor(0);
     this.dialogueBox.fillStyle(0x222222, 0.8);
@@ -1498,24 +1384,13 @@ create() {
     this.physics.add.overlap(this.player, this.projectiles, this.hitPlayer, null, this);
     
 
-
-    
-
-
     // Detecter la collision entre le bord du monde et le perso pour load la nouvelle map
     this.physics.world.setBoundsCollision(true, true, true, true);
-   
-
-      
-
     
     this.camera = this.cameras.main.setSize(1920,1080);
     this.camera.startFollow(this.player);
     this.camera.setDeadzone(50,50);
     this.camera.setBounds(10,10,3200,3200);
-
-
-
 
     this.anims.create({
         key: 'idle',
@@ -1552,16 +1427,11 @@ create() {
         repeat: -1
     });
 
-    
-
-
 
 }
 
 
-
-
-//_____________________________________________________________________________________________________________
+//__________________________________________________________________________________________________________________________________________________________________________
 
 update(time, delta) {
 
@@ -1610,8 +1480,6 @@ update(time, delta) {
         if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
             this.clean_sword();
             
-
-
             if (this.faceLeft == true) {
                 this.player.setVelocityX(0);
                 this.player.setVelocityY(0);
@@ -1657,19 +1525,6 @@ update(time, delta) {
     }
 
 
-
-  
-
-    //Pour l'instant appuyer sur E fait apparaitre une phrase et lacher le bouton fait disparaitre la phrase. A CHANGER pour ne pas avoir a maintenir
-    /*if (this.interactButton.isDown) {
-        
-    }
-    else{
-        this.noneDialogue();
-    }
-    
-    */
-
     // sortir du donjon
     if (this.player.x > 1535 && this.player.x < 1600 && this.player.y > 222 && this.player.y < 350){
         this.exitDonjon1();
@@ -1697,18 +1552,6 @@ update(time, delta) {
     // Définir un délai minimum entre les mouvements du boss (en millisecondes)
     const minMoveDelay = 6000;
 
-
-     // Mouvements aléatoires du boss
-     
-     /*
-        const now = this.time.now;
-    if (!this.lastMoveTime || now - this.lastMoveTime > minMoveDelay) {
-    const velocity = Phaser.Math.RandomXY(new Phaser.Math.Vector2(), this.bossSpeed);
-    this.boss.setVelocity(velocity.x, velocity.y);
-    this.lastMoveTime = now;
-
-    }
-    */
     if (this.player.y >= 1200)
         this.physics.moveToObject(this.boss, this.player, 50);
 
@@ -1717,10 +1560,6 @@ update(time, delta) {
          this.bossAttackTimer = time;
          this.fireProjectile();
      }
- 
-
-    
-
 
     }   
 
@@ -1749,6 +1588,7 @@ update(time, delta) {
         console.log ("Tu perds de la vie")
         player.setTint(0xff0000); // Changer la teinte du sprite en rouge
         player.body.enable = false; // Désactiver la physique du joueur
+        this.registry.set("playerHealth", pvs);
         setTimeout(() => {
             player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
             player.body.enable = true; // Réactiver la physique du joueur
@@ -1767,9 +1607,6 @@ update(time, delta) {
             this.bossBattu = true;
           }
         }
-    
-
-
 
     hitDoor(player, door) {
             if (this.hasKey == true){
@@ -1790,10 +1627,11 @@ update(time, delta) {
         console.log (this.pvs)
         player.setTint(0xff0000); // Changer la teinte du sprite en rouge
         player.body.enable = false; // Désactiver la physique du joueur
+        this.registry.set("playerHealth", this.pvs);
         setTimeout(() => {
-        player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
-        player.body.enable = true; // Réactiver la physique du joueur
-    }, 2000); 
+            player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
+            player.body.enable = true; // Réactiver la physique du joueur
+        }, 2000); 
     }
 
     
@@ -1834,14 +1672,6 @@ update(time, delta) {
 
     }
       
-      
-      
-      
-      
-      
-    
-
-
     clean_sword() {
         this.attaque_sword_left.enableBody(true, true);
         this.attaque_sword_right.enableBody(true, true);
@@ -1871,16 +1701,11 @@ update(time, delta) {
         this.scene.start("level2");
     }
 
-
-
     exitDonjon1(){
-        
         
         this.scene.start('jardin', {exitDonjon1 : true});
 
-
     }
-
 
 
     checkSpeak() {
@@ -1910,15 +1735,11 @@ update(time, delta) {
                 this.dialogueText.setText('');
             }
     
-
         }
     
-
     }
 
 }       
-
-
 
 
 
