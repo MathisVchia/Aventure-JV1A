@@ -69,6 +69,7 @@ create() {
     this.hasKey = false; // Indique si le joueur a récupéré la clé
     this.doorOpen = false; // Indique si la porte est ouverte
     this.projectiles;
+    this.cailloux;
     this.mobAttackInterval;
     this.mobAttackTimer;
     this.timeElapsed;
@@ -236,31 +237,7 @@ create() {
 
 
 
-    // Création du groupe de projectiles
-    if (this.attack_lp == true) {
-        const projectiles = this.physics.add.group();
-
-        // Ajout d'un écouteur d'événements pour la touche E
-        if (Phaser.Input.Keyboard.JustDown(this.keyEnter)){
-            console.log ("Rue déserte, dernière cigarette, plus rien ne bouge")
-            
-            // Création d'un nouveau projectile à une position face au joueur
-            const projectile = projectiles.create(this.player.x + 30, this.player.y, 'projectile');
-
-            // Définition de la vitesse du projectile
-            const vitesse = 500;
-            projectile.setVelocityX(vitesse);
-
-            // Suppression du projectile après un certain temps
-            const temps_de_vie = 1000;
-            this.time.delayedCall(temps_de_vie, () => {
-                projectile.destroy();
-            });
-        };
-
-    }
-
-   
+    this.boss = this.physics.add.sprite(1569, 767, 'boss');
 
     // Create NPC sprite and enable physics
     this.npc = this.physics.add.staticSprite(650, 420, 'npc');
@@ -269,15 +246,11 @@ create() {
     // Ajouter un groupe pour les projectiles du boss
     this.projectiles = this.physics.add.group();
 
-   /* // Définir les propriétés du boss
-    this.boss.health = 4; // Le boss doit être frappé 4 fois pour être vaincu
+
+    // Définir les propriétés du boss
     this.bossSpeed = 10;
     this.bossAttackInterval = 2000;
     this.bossAttackTimer = 0;
-
-    // Ajouter un chronomètre pour le temps écoulé depuis la dernière attaque du boss
-    this.timeElapsed = 0;
-*/
 
     // Create cursors object for player movement
     this.cursorsUp = this.input.keyboard.addKey('Z');
@@ -332,10 +305,13 @@ create() {
 
     //this.physics.add.collider(this.mob, this.attaque_sword, this.kill_mob, null, this);
     this.physics.add.collider(this.player, this.mob, this.pertePvs, null, this);
+    this.physics.add.collider(this.player, this.mob1, this.pertePvs, null, this);
     this.physics.add.collider(this.player, this.loot);
     this.physics.add.collider(this.player, this.pot);
     this.physics.add.collider(this.pot, this.murSerre);
-    this.physics.add.collider(this.mob, this.murSerre);  
+    this.physics.add.collider(this.mob, this.murSerre);
+    this.physics.add.collider(this.projectiles, this.murSerre);
+    this.physics.add.collider(this.projectiles, this.pot);
     this.physics.add.collider(this.mob, this.lance_pierre, this.recupLp, null, this);  
 
     // Set up overlap between player and npc for interaction
@@ -346,12 +322,15 @@ create() {
     this.physics.add.overlap(this.attaque_sword_right, this.mob, this.hitMonster, null, this);
     this.physics.add.overlap(this.attaque_sword_up, this.mob, this.hitMonster, null, this);
     this.physics.add.overlap(this.attaque_sword_down, this.mob, this.hitMonster, null, this);
+    this.physics.add.overlap(this.cailloux, this.mob, this.hitMonster, null, this);
+    this.physics.add.overlap(this.cailloux, this.mob1, this.hitMonster, null, this);
 
     // Attaque contre le boss
     this.physics.add.overlap(this.attaque_sword_left, this.boss, this.hitBoss, null, this);
     this.physics.add.overlap(this.attaque_sword_right, this.boss, this.hitBoss, null, this);
     this.physics.add.overlap(this.attaque_sword_up, this.boss, this.hitBoss, null, this);
     this.physics.add.overlap(this.attaque_sword_down, this.boss, this.hitBoss, null, this);
+    this.physics.add.overlap(this.cailloux, this.boss, this.hitBoss, null, this);
 
     // Coup epee contre pot pour detruire
     this.physics.add.overlap(this.attaque_sword_left, this.pot, this.hitPot, null, this);
@@ -510,23 +489,23 @@ update(time, delta) {
         // Vérification que le joueur a la capacité de lancer un projectile
         if (this.attack_lp == true) {
             // Création d'un nouveau projectile autour du joueur
-            const projectile = this.physics.add.sprite(this.player.x, this.player.y, 'projectile');
+            this.cailloux = this.physics.add.sprite(this.player.x, this.player.y, 'projectile');
             
             // Définition de la vitesse du projectile en fonction du dernier côté vers lequel le joueur a marché
             if (this.faceLeft == true) {
-                projectile.setVelocityX(-500);
+                this.cailloux.setVelocityX(-500);
             }  else if (this.faceRight == true) {
-                projectile.setVelocityX(500);
+                this.cailloux.setVelocityX(500);
             } else if (this.faceUp == true) {
-                projectile.setVelocityY(-500);
+                this.cailloux.setVelocityY(-500);
             } else if (this.faceDown == true) {
-                projectile.setVelocityY(500);
+                this.cailloux.setVelocityY(500);
             }
             
             // Suppression du projectile après un certain temps
             const temps_de_vie = 1000;
             this.time.delayedCall(temps_de_vie, () => {
-                projectile.destroy();
+                this.cailloux.destroy();
             });
         }
     });
@@ -554,11 +533,48 @@ update(time, delta) {
         this.uiLife.setTexture("lowLife")
     }
 
+    // Définir un délai minimum entre les mouvements du boss (en millisecondes)
+    const minMoveDelay = 6000;
+
+    if (this.player.x >1425 && this.player.y < 1066)
+        this.physics.moveToObject(this.boss, this.player, 50);
+
+     // Attaques régulières du boss
+     if (time > this.bossAttackTimer + this.bossAttackInterval) {
+         this.bossAttackTimer = time;
+         this.fireProjectileBoss();
+    }
+    
 }
     //_____________________________________________________________________________________________________________
 
 
     //FONCTIONS
+
+    hitBoss(player, boss) {
+        // Ajouter un coup au compteur et retirer un point de vie au boss
+        boss.health--;
+        boss.setTint(0xff0000);
+        console.log(boss.health)
+        if (boss.health === 0) {
+            boss.disableBody(true, true);
+            this.bossBattu = true;
+          }
+        }
+
+
+    fireProjectileBoss() {
+        // Ajouter un projectile qui va vers le joueur
+        var projectile = this.projectiles.create(this.boss.x, this.boss.y, 'projectile');
+        var angle = Phaser.Math.Angle.Between(this.boss.x, this.boss.y, this.player.x, this.player.y);
+        projectile.setVelocity(Math.cos(angle) * 200, Math.sin(angle) * 200);
+
+        // Détruire le projectile après 3 secondes
+        this.time.delayedCall(1500, function () {
+            projectile.destroy();
+        }, [], this);
+    }
+
 
     fireProjectile() {
         // Ajouter un projectile qui va vers le joueur
