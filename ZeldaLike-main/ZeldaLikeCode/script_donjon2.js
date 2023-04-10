@@ -12,7 +12,9 @@ export class donjon2 extends Phaser.Scene {
         this.camera;
     }
 
-    init(data){this.porteSerre=data.porteSerre};
+    init(data){this.porteSerre=data.porteSerre, his.pvs = this.registry.get("playerHealth");
+    console.log(this.pvs);
+    };
 
 
 //_____________________________________________________________________________________________________________
@@ -27,6 +29,7 @@ export class donjon2 extends Phaser.Scene {
         this.load.image('flyMob', 'assets/flyingMob.png');
         this.load.image('pot', 'assets/pot.png');
         this.load.image('lance_pierre', 'assets/lance_pierre.png');
+        this.load.image('epee', 'assets/woodenSword.png');
         this.load.image('clef', 'assets/clef.png');
         this.load.image('boss', 'assets/boss1.png');
     // TILED - preload du tileset utilisé par Tiled pour créer la map
@@ -65,7 +68,6 @@ create() {
     this.piece;
     this.pieceCount = this.registry.get("nbPieces");
     this.pieceCountText;
-    this.attack_sword = false;
     this.hasKey = false; // Indique si le joueur a récupéré la clé
     this.doorOpen = false; // Indique si la porte est ouverte
     this.projectiles;
@@ -237,7 +239,7 @@ create() {
 
 
 
-    this.boss = this.physics.add.sprite(1569, 767, 'boss');
+   // this.boss = this.physics.add.sprite(1569, 767, 'boss');
 
     // Create NPC sprite and enable physics
     this.npc = this.physics.add.staticSprite(650, 420, 'npc');
@@ -297,12 +299,7 @@ create() {
     //this.physics.add.collider(this.player, this.mob);
     this.physics.add.collider(this.player, this.npc);
     this.physics.add.collider(this.player, this.murSerre);
-    //COLLISION EPEE MOB G/D
-    this.physics.add.collider(this.attaque_sword_left, this.mob);
-    this.physics.add.collider(this.attaque_sword_right, this.mob);
-    this.physics.add.collider(this.attaque_sword_up, this.mob);
-    this.physics.add.collider(this.attaque_sword_down, this.mob);
-
+    
     //this.physics.add.collider(this.mob, this.attaque_sword, this.kill_mob, null, this);
     this.physics.add.collider(this.player, this.mob, this.pertePvs, null, this);
     this.physics.add.collider(this.player, this.mob1, this.pertePvs, null, this);
@@ -318,20 +315,26 @@ create() {
     this.physics.add.overlap(this.player, this.npc, this.checkSpeak.bind(this));
 
     // Attaque (touche entre epee et mob pour les tuer)
-    this.physics.add.overlap(this.attaque_sword_left, this.mob, this.hitMonster, null, this);
+   /* this.physics.add.overlap(this.attaque_sword_left, this.mob, this.hitMonster, null, this);
     this.physics.add.overlap(this.attaque_sword_right, this.mob, this.hitMonster, null, this);
     this.physics.add.overlap(this.attaque_sword_up, this.mob, this.hitMonster, null, this);
     this.physics.add.overlap(this.attaque_sword_down, this.mob, this.hitMonster, null, this);
-    this.physics.add.overlap(this.cailloux, this.mob, this.hitMonster, null, this);
-    this.physics.add.overlap(this.cailloux, this.mob1, this.hitMonster, null, this);
 
+    this.physics.add.overlap(this.attaque_sword_left, this.mob1, this.hitMonster1, null, this);
+    this.physics.add.overlap(this.attaque_sword_right, this.mob1, this.hitMonster, null, this);
+    this.physics.add.overlap(this.attaque_sword_up, this.mob1, this.hitMonster1, null, this);
+    this.physics.add.overlap(this.attaque_sword_down, this.mob1, this.hitMonster1, null, this);
+
+    this.physics.add.overlap(this.cailloux, this.mob, this.hitMonster, null, this);
+    this.physics.add.overlap(this.cailloux, this.mob1, this.hitMonster1, null, this);
+/*
     // Attaque contre le boss
     this.physics.add.overlap(this.attaque_sword_left, this.boss, this.hitBoss, null, this);
     this.physics.add.overlap(this.attaque_sword_right, this.boss, this.hitBoss, null, this);
     this.physics.add.overlap(this.attaque_sword_up, this.boss, this.hitBoss, null, this);
     this.physics.add.overlap(this.attaque_sword_down, this.boss, this.hitBoss, null, this);
     this.physics.add.overlap(this.cailloux, this.boss, this.hitBoss, null, this);
-
+*/
     // Coup epee contre pot pour detruire
     this.physics.add.overlap(this.attaque_sword_left, this.pot, this.hitPot, null, this);
     this.physics.add.overlap(this.attaque_sword_right, this.pot, this.hitPot, null, this);
@@ -436,7 +439,6 @@ update(time, delta) {
 
 
     // Player attack
-    if (this.attack_sword == true){
         if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
             this.clean_sword();
             
@@ -482,7 +484,6 @@ update(time, delta) {
                 
             }
         }
-    }
 
 
     this.input.keyboard.on('keydown-A', () => {
@@ -533,6 +534,7 @@ update(time, delta) {
         this.uiLife.setTexture("lowLife")
     }
 
+  /*  
     // Définir un délai minimum entre les mouvements du boss (en millisecondes)
     const minMoveDelay = 6000;
 
@@ -544,13 +546,16 @@ update(time, delta) {
          this.bossAttackTimer = time;
          this.fireProjectileBoss();
     }
-    
+
+*/
+
 }
     //_____________________________________________________________________________________________________________
 
 
     //FONCTIONS
 
+    /*
     hitBoss(player, boss) {
         // Ajouter un coup au compteur et retirer un point de vie au boss
         boss.health--;
@@ -575,7 +580,7 @@ update(time, delta) {
         }, [], this);
     }
 
-
+*/
     fireProjectile() {
         // Ajouter un projectile qui va vers le joueur
         var projectile = this.projectiles.create(this.Mob1.x, this.Mob1.y, 'projectile');
@@ -624,6 +629,21 @@ update(time, delta) {
         player.setTint(0xff0000); // Changer la teinte du sprite en rouge
         player.body.enable = false; // Désactiver la physique du joueur
         this.registry.set("playerHealth", this.pvs);
+        if (this.pvs == 3){
+            this.fullLife.visible = true;
+            this.midLife.visible = false;
+            this.lowLife.visible = false;
+        }
+        if (this.pvs == 2){
+            this.fullLife.visible = false;
+            this.midLife.visible = true;
+            this.lowLife.visible = false;
+        }
+        if (this.pvs == 1){
+            this.fullLife.visible = false;
+            this.midLife.visible = false;
+            this.lowLife.visible = true;
+        }
         setTimeout(() => {
             player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
             player.body.enable = true; // Réactiver la physique du joueur
@@ -633,10 +653,32 @@ update(time, delta) {
     
     hitMonster(attaque_sword, mob) {
         if (attaque_sword == true);
-            this.x = mob.x;
-            this.y = mob.y;
-            mob.disableBody(true, true);
-            attaque_sword.disableBody(true, true);
+            this.x = this.mob.x;
+            this.y = this.mob.y;
+            this.mob.disableBody(true, true);
+            this.attaque_sword.disableBody(true, true);
+            // Faire apparaitre un sprite à l'emplacement de la mort de l'ennemi
+            this.loot = this.physics.add.sprite(this.x, this.y, 'piece');
+            // Gérer la collision entre le joueur et la pièce
+            this.physics.add.overlap(this.player, this.loot, () => {
+                console.log ("la touché la touché, la touché la touché")
+                    
+            // Incrémenter le compteur de pièces
+                this.pieceCount += 1;
+                this.pieceCountText.setText(this.pieceCount);
+                this.loot.destroy();
+        
+        
+            });
+
+    }
+
+    hitMonster1(attaque_sword, mob) {
+        if (attaque_sword == true);
+            this.x = this.mob1.x;
+            this.y = this.mob1.y;
+            this.mob1.disableBody(true, true);
+            this.attaque_sword.disableBody(true, true);
             // Faire apparaitre un sprite à l'emplacement de la mort de l'ennemi
             this.loot = this.physics.add.sprite(this.x, this.y, 'piece');
             // Gérer la collision entre le joueur et la pièce

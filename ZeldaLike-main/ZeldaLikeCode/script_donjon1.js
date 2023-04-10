@@ -13,7 +13,9 @@ export class donjon1 extends Phaser.Scene {
         this.bossHits = 0;
     }
 
-    init(data){this.entreeDonjon1=data.entreeDonjon1};
+    init(data){this.entreeDonjon1=data.entreeDonjon1, this.pvs = this.registry.get("playerHealth"),
+    console.log(this.pvs);
+    };
 
 
 //_____________________________________________________________________________________________________________
@@ -58,12 +60,12 @@ create() {
     this.cursorsLeft;
     this.cursorsRight;
     this.cursorsDown;
-    this.pvs = this.registry.get("playerHealth");
+    this.pvs = 3;
     this.x;
     this.y;
     this.loot;
     this.piece;
-    this.pieceCount = this.registry.get("nbPieces");
+    this.pieceCount = 0;
     this.pieceCountText;
     this.attack_sword = false;
     this.hasKey = false; // Indique si le joueur a récupéré la clé
@@ -76,7 +78,6 @@ create() {
     this.timeElapsed;
     this.health;
     this.bossBattu = false;
-    this.attaque_lp = false;
 
 
 
@@ -132,7 +133,13 @@ create() {
     this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
     this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
     this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
-    this.uiLife = this.add.sprite(55, 40, "fullLife").setScrollFactor(0);
+    
+    
+    // Créer les sprites pour les différentes textures de vie
+    this.fullLife = this.add.sprite(55, 40, "fullLife").setScrollFactor(0);
+    this.midLife = this.add.sprite(55, 40, "midLife").setScrollFactor(0);
+    this.lowLife = this.add.sprite(55, 40, "lowLife").setScrollFactor(0);
+
 
 
     this.attaque_sword_left = this.physics.add.sprite(0,0, 'sword_x_left');
@@ -209,7 +216,6 @@ create() {
     this.projectiles = this.physics.add.group();
 
     // Définir les propriétés du boss
-    this.boss.health = 4; // Le boss doit être frappé 4 fois pour être vaincu
     this.bossSpeed = 10;
     this.bossAttackInterval = 2000;
     this.bossAttackTimer = 0;
@@ -443,52 +449,6 @@ update(time, delta) {
         }
     }
 
-    if (this.attaque_lp == true){
-        if (Phaser.Input.Keyboard.JustDown(this.keyEnter)){
-            this.clean_sword();
-            
-            if (this.faceLeft == true) {
-                this.player.setVelocityX(0);
-                this.player.setVelocityY(0);
-                const projectile = this.physics.add.sprite(this.player.x - 32, this.player.y, 'projectile');
-                projectile.setVelocityX(-500);
-                this.time.delayedCall(1000, () => {
-                    projectile.destroy();
-                });
-                
-            }
-            else if (this.faceRight == true) {
-                this.player.setVelocityX(0);
-                this.player.setVelocityY(0);
-                const projectile = this.physics.add.sprite(this.player.x + 32, this.player.y, 'projectile');
-                projectile.setVelocityX(500);
-                this.time.delayedCall(1000, () => {
-                    projectile.destroy();
-                });
-                
-            }
-            else if (this.faceUp == true) {
-                this.player.setVelocityX(0);
-                this.player.setVelocityY(0);
-                const projectile = this.physics.add.sprite(this.player.x, this.player.y - 32, 'projectile');
-                projectile.setVelocityY(-500);
-                this.time.delayedCall(1000, () => {
-                    projectile.destroy();
-                });
-            
-            } 
-            else if (this.faceDown == true) {
-                this.player.setVelocityX(0);
-                this.player.setVelocityY(0);
-                const projectile = this.physics.add.sprite(this.player.x, this.player.y + 32, 'projectile');
-                projectile.setVelocityY(500);
-                this.time.delayedCall(1000, () => {
-                    projectile.destroy();
-                });
-                
-            }
-        }
-    }
 
 
     // sortir du donjon
@@ -501,16 +461,6 @@ update(time, delta) {
 
     if (Phaser.Input.Keyboard.JustDown(this.interactButton)){
         this.checkSpeak();
-    }
-
-    if (this.pvs == 3){
-        this.uiLife.setTexture("fullLife")
-    }
-    if (this.pvs == 2){
-        this.uiLife.setTexture("midLife")
-    }
-    if (this.pvs == 1){
-        this.uiLife.setTexture("lowLife")
     }
 
 
@@ -594,6 +544,21 @@ update(time, delta) {
         player.setTint(0xff0000); // Changer la teinte du sprite en rouge
         player.body.enable = false; // Désactiver la physique du joueur
         this.registry.set("playerHealth", this.pvs);
+        if (this.pvs == 3){
+            this.fullLife.visible = true;
+            this.midLife.visible = false;
+            this.lowLife.visible = false;
+        }
+        if (this.pvs == 2){
+            this.fullLife.visible = false;
+            this.midLife.visible = true;
+            this.lowLife.visible = false;
+        }
+        if (this.pvs == 1){
+            this.fullLife.visible = false;
+            this.midLife.visible = false;
+            this.lowLife.visible = true;
+        }
         setTimeout(() => {
             player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
             player.body.enable = true; // Réactiver la physique du joueur
@@ -616,6 +581,7 @@ update(time, delta) {
             // Incrémenter le compteur de pièces
                 this.pieceCount += 1;
                 this.pieceCountText.setText(this.pieceCount);
+                this.registry.set("pieceCount", this.pieceCount);
                 this.loot.destroy();
         
         
@@ -634,8 +600,9 @@ update(time, delta) {
 
     recupMeca(player, epee) {
         epee.disableBody(true, true);
-        this.attaque_lp = true;
-
+        this.sword = this.add.sprite(55, 170, "epee").setScrollFactor(0);
+        this.attack_sword = true;
+        this.registry.set("attack_sword", true);
     }
       
     clean_sword() {

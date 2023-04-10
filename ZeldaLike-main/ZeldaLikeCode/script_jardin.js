@@ -11,7 +11,9 @@ export class Jardin extends Phaser.Scene {
         this.canTrade = true;
     }
 
-    init(data){this.porteHaut=data.porteHaut, this.porteBas = data.porteBas, this.exitDonjon1 = data.exitDonjon1};
+    init(data){this.porteHaut=data.porteHaut, this.porteBas = data.porteBas, this.exitDonjon1 = data.exitDonjon1, this.pvs = this.registry.get("playerHealth"), this.pieceCount = this.registry.get("pieceCount"), this.attack_sword = this.registry.get("attack_sword");
+        console.log(this.pvs);
+    };
     
 //______________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -34,10 +36,9 @@ export class Jardin extends Phaser.Scene {
         this.load.tilemapTiledJSON('map', 'ZeldaLikeMapV1.json');
         
 
-        this.load.image('fullLife', 'assets/FullLife.png');
+        this.load.image('fullLife', 'assets/fullLife.png');
         this.load.image('piece', 'assets/piece.png');
         this.load.image('poche', 'assets/poche.png');
-        this.load.image('fullLife', 'assets/fullLife.png');
         this.load.image('midLife', 'assets/midLife.png');
         this.load.image('lowLife', 'assets/lowLife.png');
         
@@ -63,9 +64,8 @@ export class Jardin extends Phaser.Scene {
         this.tradeSentence1 = false;
         this.health;
         this.piece;
-        this.pieceCount = this.registry.get("nbPieces");
         this.pieceCountText;
-        this.pvs = this.registry.get("playerHealth");
+        this.uiLife;
 
 
 
@@ -119,7 +119,9 @@ export class Jardin extends Phaser.Scene {
         this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
         this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
         this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
+
         this.uiLife = this.add.sprite(55, 40, "fullLife").setScrollFactor(0);
+
         this.attaque_sword_left = this.physics.add.sprite(0,0, 'sword_x_left');
         this.attaque_sword_right = this.physics.add.sprite(0,0, 'sword_x_right');
         this.attaque_sword_up = this.physics.add.sprite(0,0, 'sword_y_up');
@@ -391,7 +393,7 @@ export class Jardin extends Phaser.Scene {
 
 
         // Player attack
-        if (this.attaque_sword == true){
+        if (this.attack_sword == true){
             if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
                 this.clean_sword();
                 
@@ -438,17 +440,6 @@ export class Jardin extends Phaser.Scene {
                     
                 }
             }
-        }
-
-
-        if (this.pvs == 3){
-            this.uiLife.setTexture("fullLife")
-        }
-        if (this.pvs == 2){
-            this.uiLife.setTexture("midLife")
-        }
-        if (this.pvs == 1){
-            this.uiLife.setTexture("lowLife")
         }
 
         // pour rentrer a l'interieur par le haut
@@ -501,10 +492,25 @@ export class Jardin extends Phaser.Scene {
         player.setTint(0xff0000); // Changer la teinte du sprite en rouge
         player.body.enable = false; // Désactiver la physique du joueur
         this.registry.set("playerHealth", this.pvs);
+        if (this.pvs == 3){
+            this.fullLife.visible = true;
+            this.midLife.visible = false;
+            this.lowLife.visible = false;
+        }
+        if (this.pvs == 2){
+            this.fullLife.visible = false;
+            this.midLife.visible = true;
+            this.lowLife.visible = false;
+        }
+        if (this.pvs == 1){
+            this.fullLife.visible = false;
+            this.midLife.visible = false;
+            this.lowLife.visible = true;
+        }
         setTimeout(() => {
             player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
             player.body.enable = true; // Réactiver la physique du joueur
-     }, 2000); 
+        }, 2000); 
     }
 
     hitMonsterU(attaque_sword, mobU) {
@@ -522,6 +528,7 @@ export class Jardin extends Phaser.Scene {
             // Incrémenter le compteur de pièces
                 this.pieceCount += 1;
                 this.pieceCountText.setText(this.pieceCount);
+                this.registry.set("pieceCount", this.pieceCount);
                 this.loot.destroy();
         
         
@@ -543,6 +550,7 @@ export class Jardin extends Phaser.Scene {
                     
             // Incrémenter le compteur de pièces
                 this.pieceCount += 1;
+                this.registry.set("pieceCount", this.pieceCount);
                 this.pieceCountText.setText(this.pieceCount);
                 this.loot.destroy();
         

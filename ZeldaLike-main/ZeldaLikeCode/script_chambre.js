@@ -12,7 +12,8 @@ export class chambre extends Phaser.Scene {
         this.changeLevelFront = false;
     }
 
-    init(data){this.startSpawn = data.startSpawn, this.porteEntree=data.porteEntree, this.porteEntreeHaut = data.porteEntreeHaut};
+    init(data){this.startSpawn = data.startSpawn, this.porteEntree=data.porteEntree, this.porteEntreeHaut = data.porteEntreeHaut
+    };
 
     // PRELOAD______________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -82,25 +83,13 @@ export class chambre extends Phaser.Scene {
         this.decorations = this.map1.createLayer('decorsMaison', this.tileset1);
 
         this.decors.setCollisionByProperty({ estSolide: true });
-        
+       /* 
         this.uiLife = this.add.sprite(55,40,'fullLife').setScale(2,2).setScrollFactor(0);
         
         this.add.image(55,105,'piece').setScale(2,2).setScrollFactor(0);
         this.add.image(55,170,'poche').setScale(2,2).setScrollFactor(0);
         this.add.image(55,245,'poche').setScale(2,2).setScrollFactor(0);
-
-        
-
-
-        // TILED - load calque objet utilisés dans Tiled (pour des monstres, par exemple)
-            // this.nomDuMonstre = this.physics.add.group();
-            // this.nomDuMonstre_Layer = this.nomDeLaVariableMap.getObjectLayer(' nomDuCalqueObjetDansTiled ');
-            // this.nomDuMonstre_Layer.objects.forEach(nomDuMonstre_Layer => {
-                //this.monstre_create = this.physics.add.sprite(nomDuMonstre_Layer.x + 16, nomDuMonstre_Layer.y + 16, 'mob' (=> c'est la balise que tu as mis dans le preload pour l'image de ton monstre));
-                //this.monstre_create.anims.play('balise_animation_marche');
-                //this.nomDuMonstre.add(this.monstre_create);
-            //)};
-
+        */
         
         // Create player sprite and enable physics
 
@@ -265,7 +254,8 @@ export class chambre extends Phaser.Scene {
         setTimeout(() => {
             player.clearTint(); // Remettre la teinte du sprite à sa couleur d'origine
             player.body.enable = true; // Réactiver la physique du joueur
-     }, 2000); 
+     }, 2000);
+     
     }
 
 
@@ -283,8 +273,8 @@ export class chambre extends Phaser.Scene {
                     
             // Incrémenter le compteur de pièces
                 this.pieceCount += 1;
-                this.registry.set("nbPieces", this.pieceCount);
                 this.pieceCountText.setText(this.pieceCount);
+                this.registry.set("pieceCount", this.pieceCount);
                 this.loot.destroy();
         
         
