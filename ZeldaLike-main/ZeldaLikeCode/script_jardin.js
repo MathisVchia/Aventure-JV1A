@@ -11,7 +11,9 @@ export class Jardin extends Phaser.Scene {
         this.canTrade = true;
     }
 
-    init(data){this.porteHaut=data.porteHaut, this.porteBas = data.porteBas, this.exitDonjon1 = data.exitDonjon1, this.pvs = this.registry.get("playerHealth"), this.pieceCount = this.registry.get("pieceCount"), this.attack_sword = this.registry.get("attack_sword");
+    init(data){this.porteHaut=data.porteHaut, this.porteBas = data.porteBas, this.exitDonjon1 = data.exitDonjon1, this.pvs = this.registry.get("playerHealth"), 
+    //this.pieceCount = this.registry.get("pieceCount"), 
+    this.attack_sword = this.registry.get("attack_sword");
         console.log(this.pvs);
     };
     
@@ -101,6 +103,15 @@ export class Jardin extends Phaser.Scene {
         this.dialogues;
         this.randomIndex;
         
+            // Créer les sprites pour les différentes textures de vie
+        this.fullLife = this.add.sprite(55, 40, "fullLife").setScrollFactor(0);
+        this.midLife = this.add.sprite(55, 40, "midLife").setScrollFactor(0);
+        this.lowLife = this.add.sprite(55, 40, "lowLife").setScrollFactor(0);
+
+        this.pieceCount = this.registry.get('pieceCount');
+
+        // Utiliser la valeur récupérée pour afficher ou effectuer d'autres opérations
+        console.log(`Nombre de pièces : ${this.pieceCount}`);
 
     
         // TILED - load la map
@@ -394,6 +405,7 @@ export class Jardin extends Phaser.Scene {
 
         // Player attack
         if (this.attack_sword == true){
+            this.sword = this.add.sprite(55, 170, "epee").setScrollFactor(0);
             if (Phaser.Input.Keyboard.JustDown(this.keySpace)){
                 this.clean_sword();
                 

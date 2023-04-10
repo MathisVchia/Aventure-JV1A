@@ -518,10 +518,8 @@ update(time, delta) {
         boss.health--;
         boss.setTint(0xff0000);
         console.log(boss.health)
-        if (boss.health === 0) {
-            boss.disableBody(true, true);
-            this.bossBattu = true;
-          }
+        boss.disableBody(true, true);
+        this.bossBattu = true;
         }
 
     hitDoor(player, door) {
@@ -581,7 +579,7 @@ update(time, delta) {
             // Incrémenter le compteur de pièces
                 this.pieceCount += 1;
                 this.pieceCountText.setText(this.pieceCount);
-                this.registry.set("pieceCount", this.pieceCount);
+                this.registry.set('pieceCount', this.pieceCount);
                 this.loot.destroy();
         
         

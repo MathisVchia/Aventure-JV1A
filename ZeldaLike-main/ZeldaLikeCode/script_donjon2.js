@@ -12,7 +12,7 @@ export class donjon2 extends Phaser.Scene {
         this.camera;
     }
 
-    init(data){this.porteSerre=data.porteSerre, his.pvs = this.registry.get("playerHealth");
+    init(data){this.porteSerre=data.porteSerre, his.pvs = this.registry.get("playerHealth"), this.pieceCount = this.registry.get("pieceCount");
     console.log(this.pvs);
     };
 
@@ -666,6 +666,7 @@ update(time, delta) {
             // Incrémenter le compteur de pièces
                 this.pieceCount += 1;
                 this.pieceCountText.setText(this.pieceCount);
+                this.registry.set("pieceCount", this.pieceCount);
                 this.loot.destroy();
         
         
@@ -688,6 +689,7 @@ update(time, delta) {
             // Incrémenter le compteur de pièces
                 this.pieceCount += 1;
                 this.pieceCountText.setText(this.pieceCount);
+                this.registry.set("pieceCount", this.pieceCount);
                 this.loot.destroy();
         
         

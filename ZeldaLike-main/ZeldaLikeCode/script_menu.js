@@ -8,22 +8,18 @@ export class menu extends Phaser.Scene {
     }
 
     preload(){
-        this.load.image('MenuFond', 'assets/MenuFond.png');
-        this.load.image('BoutonStart', 'assets/BoutonStart.png');
+        this.load.image('MenuFond', 'assets/logo ats.png');
     }
 
     create(){
 
         // ajouter l'image de fond
-        this.add.image(0, 0, 'MenuFond').setOrigin(0, 0);
+        this.menu = this.add.image(0, 0, 'MenuFond').setOrigin(0, 0);
 
-        
-        // créer le bouton "BoutonStart" et l'ajouter à la scène
-        this.boutonStart = this.add.image(200, 400, 'BoutonStart').setOrigin(0, 0);
 
         // ajouter l'interaction avec le bouton ici
-        this.boutonStart.setInteractive();
-        this.boutonStart.on('pointerdown', () => {
+        this.menu.setInteractive();
+        this.menu.on('pointerdown', () => {
             this.startGame();
         });
 
