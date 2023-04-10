@@ -209,7 +209,7 @@ create() {
     
 
     // Create NPC sprite and enable physics
-    this.npc = this.physics.add.staticSprite(650, 420, 'npc');
+    this.npc = this.physics.add.staticSprite( 1128, 131, 'npc');
 
 
     // Ajouter un groupe pour les projectiles du boss

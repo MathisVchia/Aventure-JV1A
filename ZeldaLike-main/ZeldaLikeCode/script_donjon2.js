@@ -101,7 +101,10 @@ create() {
     this.dialogues;
     this.randomIndex;
     
-
+    // intégrer les commandes d'une manette
+    this.input.gamepad.once('connected', function (pad) {
+        this.controller = pad;
+    },this);
 
     // TILED - load la map
     this.map3 = this.add.tilemap('map3');

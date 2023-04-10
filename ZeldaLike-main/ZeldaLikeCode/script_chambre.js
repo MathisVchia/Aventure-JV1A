@@ -116,7 +116,7 @@ export class chambre extends Phaser.Scene {
         }
         
         // Create NPC sprite and enable physics
-        this.npc = this.physics.add.staticSprite(700, 450, 'npc');
+        this.npc = this.physics.add.staticSprite(370, 661, 'npc');
         //npc.setCollideWorldBounds(true);
 
         // Create cursors object for player movement

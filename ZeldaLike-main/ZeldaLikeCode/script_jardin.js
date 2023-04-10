@@ -110,6 +110,12 @@ export class Jardin extends Phaser.Scene {
 
         this.pieceCount = this.registry.get('pieceCount');
 
+
+        // intégrer les commandes d'une manette
+        this.input.gamepad.once('connected', function (pad) {
+            this.controller = pad;
+        },this);
+
         // Utiliser la valeur récupérée pour afficher ou effectuer d'autres opérations
         console.log(`Nombre de pièces : ${this.pieceCount}`);
 
@@ -212,7 +218,7 @@ export class Jardin extends Phaser.Scene {
     
 
         // Create NPC sprite and enable physics
-        this.npc = this.physics.add.staticSprite(700, 450, 'npc');
+        this.npc = this.physics.add.staticSprite(2476, 2033, 'npc');
         //npc.setCollideWorldBounds(true);
 
 

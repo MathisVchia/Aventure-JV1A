@@ -16,6 +16,10 @@ export class menu extends Phaser.Scene {
         // ajouter l'image de fond
         this.menu = this.add.image(0, 0, 'MenuFond').setOrigin(0, 0);
 
+        // calculer l'échelle pour mettre l'image au format 16:9
+    const scaleFactor = Math.min(this.game.config.width / this.menu.width, this.game.config.height / (this.menu.height * 9/16));
+    this.menu.setScale(scaleFactor);
+
 
         // ajouter l'interaction avec le bouton ici
         this.menu.setInteractive();
